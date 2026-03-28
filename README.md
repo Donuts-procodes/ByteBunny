@@ -2,8 +2,6 @@
 
 > Learn coding languages the fun way — built with **Tauri 2 + Rust + React**
 
-![ByteBunny](public/bunny.svg)
-
 ---
 
 ## ✨ Features
@@ -31,20 +29,6 @@
 | Node | ≥ 18    | https://nodejs.org |
 | npm  | ≥ 9     | bundled with Node |
 | Tauri CLI | 2.x | `npm install -g @tauri-apps/cli` |
-
-### Linux extra deps
-```bash
-sudo apt update
-sudo apt install -y libwebkit2gtk-4.1-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
-```
-
-### macOS extra deps
-```bash
-xcode-select --install
-```
-
-### Windows
-Install [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/) with the "C++ build tools" workload.
 
 ---
 
