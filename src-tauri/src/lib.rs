@@ -77,8 +77,12 @@ fn get_app_version() -> String {
 
 pub fn run() {
     tauri::Builder::default()
+<<<<<<< HEAD
         // Correct way to initialize plugins in Tauri v2
         .plugin(tauri_plugin_store::Builder::new().build()) 
+=======
+        .plugin(tauri_plugin_store::Builder::default().build())
+>>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             greet,
@@ -90,10 +94,15 @@ pub fn run() {
         .setup(|app| {
             #[cfg(debug_assertions)]
             {
+<<<<<<< HEAD
                 // In v2, use the get_webview_window helper
                 if let Some(window) = app.get_webview_window("main") {
                     window.open_devtools();
                 }
+=======
+                let window = app.get_webview_window("main").unwrap();
+                window.open_devtools();
+>>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
             }
             Ok(())
         })

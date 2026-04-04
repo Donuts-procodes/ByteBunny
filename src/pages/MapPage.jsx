@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 import { useState, useEffect } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { LANGUAGES, generateLevelsAsync, getLangProgress } from '../data/levels';
+=======
+import { useState } from 'react';
+import { useAppStore } from '../stores/appStore';
+import { LANGUAGES, generateLevels, getLangProgress } from '../data/levels';
+>>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
 import { BottomNav, SettingsModal, ProgressBar } from '../components/UI';
 
 // Zigzag column positions (left %)
@@ -21,6 +27,7 @@ export default function MapPage() {
   const startLevel = useAppStore((s) => s.startLevel);
   const setPage    = useAppStore((s) => s.setPage);
   const [showSettings, setShowSettings] = useState(false);
+<<<<<<< HEAD
   const [levels, setLevels]             = useState([]);
   const [levelsReady, setLevelsReady]   = useState(false);
 
@@ -46,6 +53,16 @@ export default function MapPage() {
       </div>
     );
   }
+=======
+
+  const lang    = LANGUAGES.find((l) => l.id === activeLang);
+  const lp      = getLangProgress(progress, activeLang);
+  const levels  = generateLevels(activeLang);
+  const current = lp.currentLevel;
+  const done    = lp.completedLevels;
+
+  const pct = Math.round(Object.keys(done).length / 50 * 100);
+>>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
 
   // Node positions
   const positions = levels.map((_, i) => ({

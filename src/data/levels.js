@@ -221,6 +221,7 @@ export function calcLangPercent(progress, langId) {
   const lp = getLangProgress(progress, langId);
   return Math.round(Object.keys(lp.completedLevels).length / 50 * 100);
 }
+<<<<<<< HEAD
 
 // ── Admin-pushed level cache ──────────────────────────────────────────────────
 // Fetched once from Firestore /admin/levels and cached in memory.
@@ -266,3 +267,5 @@ export function invalidateAdminLevelCache() {
   _adminLevelCache = null;
   _adminFetchPromise = null;
 }
+=======
+>>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b

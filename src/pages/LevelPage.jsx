@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useAppStore } from '../stores/appStore';
+<<<<<<< HEAD
 import { generateLevelsAsync, getLangById } from '../data/levels';
+=======
+import { generateLevels, getLangById } from '../data/levels';
+>>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
 import { Bunny, Confetti, ProgressBar } from '../components/UI';
 
 export default function LevelPage() {
@@ -11,6 +15,7 @@ export default function LevelPage() {
   const addToast        = useAppStore((s) => s.addToast);
 
   const lang   = getLangById(activeLang);
+<<<<<<< HEAD
   const [levels, setLevels] = useState([]);
   const [levelsReady, setLevelsReady] = useState(false);
 
@@ -24,6 +29,10 @@ export default function LevelPage() {
   }, [activeLang]);
 
   const level = levelsReady ? (levels[(currentLevelId || 1) - 1] || levels[0]) : null;
+=======
+  const levels = generateLevels(activeLang);
+  const level  = levels[(currentLevelId || 1) - 1] || levels[0];
+>>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
 
   const [selected,      setSelected]      = useState(null);
   const [submitted,     setSubmitted]      = useState(false);
@@ -43,6 +52,7 @@ export default function LevelPage() {
 
   const heartPct = Math.round((hearts / 3) * 100);
 
+<<<<<<< HEAD
   // Show mini loading state while levels fetch from Firestore
   if (!levelsReady || !level) {
     return (
@@ -53,6 +63,8 @@ export default function LevelPage() {
     );
   }
 
+=======
+>>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
   const handleSubmit = () => {
     if (selected === null) { addToast('Pick an answer first!', 'info'); return; }
     setSubmitted(true);
