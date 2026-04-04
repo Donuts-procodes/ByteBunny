@@ -1,0 +1,21 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users can only read/write their own progress document
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Admin levels collection — anyone authenticated can READ (to load custom levels),
+    // but only authenticated admin users can WRITE.
+    // Replace the UIDs below with your actual admin Firebase UIDs.
+    match /admin/{document=**} {
+      allow read:  if request.auth != null;
+      allow write: if request.auth != null
+                   && request.auth.uid in [
+                     // '60SxAQ8VO9N82wkaqdzCm0vvMhD2'
+                   ];
+    }
+  }
+}
