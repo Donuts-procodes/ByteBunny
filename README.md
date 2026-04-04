@@ -1,11 +1,10 @@
-<<<<<<< HEAD
-# 🐰 ByteBunny v0.2
+# 🐰 ByteBunny v0.1
 
 > Learn coding languages the fun way — Tauri 2 + Rust + React + Firebase
 
 ---
 
-## ✨ What's new in v0.2
+## ✨ What's new in v0.1
 
 | Feature | Details |
 |---|---|
@@ -226,7 +225,7 @@ bytebunny/
 | `validate_password(password)` | Strength score 0–4 |
 | `calculate_level_score(hearts, max, attempts)` | Score % |
 | `get_xp_for_level(level_id, score, base_xp)` | XP earned |
-| `get_app_version()` | `"0.2.0"` |
+| `get_app_version()` | `"0.1.0"` |
 =======
 ## 🦀 Rust Commands Available
 
