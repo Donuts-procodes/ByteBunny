@@ -21,32 +21,28 @@ import {
 } from 'firebase/firestore';
 
 // ── Config ────────────────────────────────────────────────────────────────────
+// Using import.meta.env for Vite-based environment variables
 const firebaseConfig = {
-  apiKey:            'AIzaSyBvMikLtzxa3SEA5B0eIZ8KjQs9YCMCSv0',
-  authDomain:        'byte-bunny.firebaseapp.com',
-  projectId:         'byte-bunny',
-  storageBucket:     'byte-bunny.firebasestorage.app',
-  messagingSenderId: '119764366128',
-  appId:             '1:119764366128:web:3fb3cc5f65dbe2ae9e0ef5',
-  measurementId:     'G-TEHW7LQ30D',
+  apiKey:             import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain:         import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId:          import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket:      import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId:  import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId:              import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId:      import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 const app  = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db   = getFirestore(app);
 
-// Keep user signed in across app restarts (persisted to disk via IndexedDB)
+// Keep user signed in across app restarts
 setPersistence(auth, browserLocalPersistence).catch(() => {});
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-/** Build the Firestore user document path */
 export const userDoc = (uid) => doc(db, 'users', uid);
 
-/**
- * Merge two progress objects — take the highest score per level and the
- * highest currentLevel so progress never goes backwards across devices.
- */
 export function mergeProgress(local = {}, remote = {}) {
   const merged = {};
   const langs  = new Set([...Object.keys(local), ...Object.keys(remote)]);
@@ -69,10 +65,6 @@ export function mergeProgress(local = {}, remote = {}) {
   return merged;
 }
 
-/**
- * Push local state snapshot to Firestore (called after every meaningful action).
- * Uses merge:true so we never accidentally wipe fields written by another device.
- */
 export async function pushToFirestore(uid, snapshot) {
   try {
     await setDoc(userDoc(uid), {
@@ -91,9 +83,6 @@ export async function pushToFirestore(uid, snapshot) {
   }
 }
 
-/**
- * Fetch the stored user document once (used on first login to restore cloud data).
- */
 export async function fetchFromFirestore(uid) {
   try {
     const snap = await getDoc(userDoc(uid));
@@ -104,11 +93,6 @@ export async function fetchFromFirestore(uid) {
   }
 }
 
-/**
- * Subscribe to real-time Firestore updates.
- * Calls `onUpdate(data)` whenever another device writes.
- * Returns the unsubscribe function.
- */
 export function subscribeFirestore(uid, onUpdate) {
   return onSnapshot(userDoc(uid), (snap) => {
     if (snap.exists()) onUpdate(snap.data());
@@ -140,10 +124,6 @@ export async function firebaseLogout() {
   await signOut(auth);
 }
 
-/**
- * onAuthStateChanged wrapper — resolves once with the initial auth state,
- * and calls `onChange` on every subsequent change.
- */
 export function listenAuthState(onChange) {
   return onAuthStateChanged(auth, onChange);
 }
