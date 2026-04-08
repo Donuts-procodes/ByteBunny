@@ -14,7 +14,7 @@
 | 🐰 Loading screen | Animated bunny with cycling coding tips |
 | 🎮 Gammy auth | Hopping bunny animation on login/signup buttons |
 | 📡 Scanline fix | Only shows on menu/auth pages, never during gameplay |
-=======
+//
 # 🐰 ByteBunny
 
 > Learn coding languages the fun way — built with **Tauri 2 + Rust + React**
@@ -46,14 +46,14 @@
 | Node | ≥ 18    | https://nodejs.org |
 | npm  | ≥ 9     | bundled with Node |
 | Tauri CLI | 2.x | `npm install -g @tauri-apps/cli` |
->>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
+////
 
 ---
 
 ## 🚀 Quick Start
 
 ```bash
-<<<<<<< HEAD
+//
 npm install
 npm run tauri dev       # dev mode with hot reload
 npm run tauri build     # production build
@@ -140,7 +140,7 @@ Complete level → pushToFirestore(/users/{uid})
                          ↓
              UI updates live across devices ✅
 ```
-=======
+//
 # 1. Clone / unzip the project
 cd bytebunny
 
@@ -155,7 +155,7 @@ npm run tauri build
 ```
 
 The built installers will be in `src-tauri/target/release/bundle/`.
->>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
+////
 
 ---
 
@@ -163,7 +163,7 @@ The built installers will be in `src-tauri/target/release/bundle/`.
 
 ```
 bytebunny/
-<<<<<<< HEAD
+//
 ├── src/
 │   ├── lib/firebase.js          ← Config, auth helpers, Firestore push/subscribe
 │   ├── stores/appStore.js       ← Zustand + Firebase (source of truth)
@@ -179,7 +179,7 @@ bytebunny/
 ├── src-tauri/src/lib.rs         ← Rust: validate_password, scoring, xp calc
 ├── firestore.rules              ← Deploy to Firebase Console
 └── package.json                 ← firebase ^10 included
-=======
+//
 ├── src/                        # React frontend
 │   ├── main.jsx                # Entry point
 │   ├── App.jsx                 # Page router
@@ -212,12 +212,12 @@ bytebunny/
 ├── index.html                  # HTML shell
 ├── vite.config.js              # Vite bundler config
 └── package.json                # Node dependencies
->>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
+////
 ```
 
 ---
 
-<<<<<<< HEAD
+//
 ## 🦀 Rust Commands
 
 | Command | Returns |
@@ -226,7 +226,7 @@ bytebunny/
 | `calculate_level_score(hearts, max, attempts)` | Score % |
 | `get_xp_for_level(level_id, score, base_xp)` | XP earned |
 | `get_app_version()` | `"0.1.0"` |
-=======
+//
 ## 🦀 Rust Commands Available
 
 | Command | Description |
@@ -241,17 +241,17 @@ Call from React via:
 import { invoke } from '@tauri-apps/api/core';
 const strength = await invoke('validate_password', { password: 'MyPass1!' });
 ```
->>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
+////
 
 ---
 
 ## 🎨 Tech Stack
 
-<<<<<<< HEAD
+//
 Tauri 2 (Rust) · Firebase 10 (Auth + Firestore) · React 18 · Vite · Zustand · JetBrains Mono
 
 MIT 🐰
-=======
+//
 | Layer | Tech |
 |-------|------|
 | Desktop shell | Tauri 2 (Rust) |
@@ -298,4 +298,4 @@ All colors are CSS variables in `src/styles/globals.css` under `:root` (dark) an
 ## 📄 License
 
 MIT — free to use, modify, and ship 🐰
->>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
+////

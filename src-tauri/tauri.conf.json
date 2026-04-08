@@ -38,7 +38,6 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
-<<<<<<< HEAD
   },
   "plugins": {
     "shell": {
@@ -46,7 +45,4 @@
     }
   }
 }
-=======
-  }
-}
->>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
+

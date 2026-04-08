@@ -9,10 +9,10 @@ export default function ProfilePage() {
   const streak   = useAppStore((s) => s.streak);
   const xp       = useAppStore((s) => s.xp);
   const logout   = useAppStore((s) => s.logout);
-<<<<<<< HEAD
+//
   const setPage  = useAppStore((s) => s.setPage);
-=======
->>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
+//
+////
   const [showSettings, setShowSettings] = useState(false);
 
   const totalLevels = Object.values(progress).reduce(
@@ -129,7 +129,7 @@ export default function ProfilePage() {
           </div>
         </div>
 
-<<<<<<< HEAD
+//
         {/* Admin panel — only visible to admins */}
         {user?.isAdmin && (
           <button
@@ -141,8 +141,8 @@ export default function ProfilePage() {
           </button>
         )}
 
-=======
->>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
+//
+////
         {/* Logout */}
         <button className="btn btn-danger btn-full" onClick={logout}>
           🚪 Log Out

@@ -6,11 +6,7 @@
   "permissions": [
     "core:default",
     "store:default",
-<<<<<<< HEAD
     "shell:default",
     "shell:allow-open"
-=======
-    "shell:default"
->>>>>>> 0189a73c6eae47f41fc20cb0e28fb92172c6c37b
   ]
 }
