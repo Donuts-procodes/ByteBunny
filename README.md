@@ -148,6 +148,7 @@ npm install
 npm run tauri dev
 
 # 4. Build production app
+```
 npm run tauri build
 ```
 
@@ -160,7 +161,6 @@ The built installers will be in `src-tauri/target/release/bundle/`.
 
 ```
 bytebunny/
-
 ├── src/
 │   ├── lib/firebase.js          ← Config, auth helpers, Firestore push/subscribe
 │   ├── stores/appStore.js       ← Zustand + Firebase (source of truth)
@@ -208,7 +208,7 @@ bytebunny/
 ├── index.html                  # HTML shell
 ├── vite.config.js              # Vite bundler config
 └── package.json                # Node dependencies
-
+```
 ## 🦀 Rust Commands
 
 | Command | Returns |
