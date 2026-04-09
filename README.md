@@ -51,7 +51,6 @@
 ## 🚀 Quick Start
 
 ```bash
-<<<<<<< HEAD
 npm install
 npm run tauri dev       # dev mode with hot reload
 npm run tauri build     # production build
