@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useAppStore } from '../stores/appStore';
-import { LANGUAGES, calcLangPercent } from '../data/levels';
+import { useAppStore } from '../stores/enhanced-appStore';
+import { LANGUAGES, calcLangPercent } from '../data/enhanced-levels';
 import { Bunny, BottomNav, ProgressBar, SettingsModal } from '../components/UI';
 
 export default function HomePage() {
@@ -17,91 +17,98 @@ export default function HomePage() {
 
   return (
     <div className="page">
-      <div className="page-content">
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <div>
-            <div style={{ fontSize: 20, fontWeight: 800 }}>
-              Hey, <span style={{ color: 'var(--accent)' }}>{user?.username}</span>! 🐰
-            </div>
-            <div style={{ color: 'var(--text2)', fontSize: 12, marginTop: 2 }}>
-              {streak > 0 ? `${streak}-day streak! Keep going 🔥` : 'Ready to code today?'}
-            </div>
+      {/* Header */}
+      <div className="topbar">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flex: 1 }}>
+          <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'var(--bg-soft)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, border: '1px solid var(--border)' }}>
+            {user?.avatar ? <img src={user.avatar} style={{ width: '100%', height: '100%', borderRadius: '50%' }} /> : '🐰'}
           </div>
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <div className="streak-pill">🔥 {streak}</div>
-            <div style={{ background: 'rgba(88,166,255,0.12)', border: '1px solid rgba(88,166,255,0.3)', borderRadius: 999, padding: '5px 12px', color: 'var(--blue)', fontWeight: 800, fontSize: 13 }}>
-              ⚡ {xp} XP
-            </div>
-            <button className="btn btn-ghost btn-sm" onClick={() => setShowSettings(true)} style={{ fontSize: 18, padding: '6px 10px' }}>⚙️</button>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--text-high)' }}>{user?.username || 'Coder'}</div>
+            <div style={{ fontSize: 11, color: 'var(--primary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5 }}>Lv. {Math.floor(xp / 100) + 1} Enthusiast</div>
           </div>
         </div>
 
-        {/* Continue banner */}
-        {lastLangData && (
-          <div className="card animate-slideUp" style={{ background: 'linear-gradient(135deg,rgba(0,255,136,0.08),rgba(88,166,255,0.08))', border: '1px solid var(--accent)', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ fontSize: 40 }}>{lastLangData.icon}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 800, fontSize: 14 }}>Continue {lastLangData.name}</div>
-              <div style={{ color: 'var(--text2)', fontSize: 12, marginTop: 2 }}>
-                Level {progress[lastLang]?.currentLevel || 1} of 50 — {calcLangPercent(progress, lastLang)}% done
-              </div>
-              <ProgressBar value={calcLangPercent(progress, lastLang)} style={{ marginTop: 8 }} />
+        <div style={{ display: 'flex', gap: 12 }}>
+          <div className="badge badge-accent" style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'rgba(0, 255, 136, 0.1)', color: 'var(--primary)', border: '1px solid rgba(0, 255, 136, 0.2)' }}>
+            <span>🔥</span> {streak}
+          </div>
+          <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--xp-blue)', display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span>⚡</span> {xp}
+          </div>
+          <button className="btn btn-ghost btn-sm" onClick={() => setShowSettings(true)} style={{ padding: '8px', minWidth: 40 }}>⚙️</button>
+        </div>
+      </div>
+
+      <div className="page-content scroll-area">
+        {/* Streak Card */}
+        <div className="card animate-in" style={{ marginBottom: 32, position: 'relative', overflow: 'hidden', borderLeft: '4px solid var(--primary)' }}>
+          <div style={{ position: 'absolute', top: -20, right: -20, fontSize: 120, opacity: 0.03, transform: 'rotate(15deg)', pointerEvents: 'none' }}>🐰</div>
+          <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+            <Bunny size={64} mood={streak > 0 ? 'excited' : 'happy'} animate={streak > 0} />
+            <div>
+              <h3 style={{ marginBottom: 4, fontSize: 18 }}>{streak > 0 ? `${streak} Day Streak!` : 'Ready to Code?'}</h3>
+              <p style={{ fontSize: 13, color: 'var(--text-med)', lineHeight: 1.5 }}>
+                {streak === 0 ? "Solve one level today to start your coding streak!" :
+                 streak < 5  ? "Keep it up! You're building a great habit." :
+                 "You're a coding machine! Don't stop now."}
+              </p>
             </div>
-            <button className="btn btn-primary btn-sm" onClick={() => continueLearning(lastLang)}>
-              ▶ Go
-            </button>
+          </div>
+        </div>
+
+        {/* Resume Path */}
+        {lastLangData && (
+          <div className="animate-in" style={{ animationDelay: '0.1s', marginBottom: 32 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12, paddingLeft: 4 }}>
+              <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--text-low)', textTransform: 'uppercase', letterSpacing: 1.5 }}>Resume Path</span>
+            </div>
+            <div className="card card-hover" onClick={() => goToMap(lastLang)} style={{ background: 'var(--bg-soft)', borderLeft: `4px solid ${lastLangData.color || 'var(--primary)'}` }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                  <span style={{ fontSize: 32 }}>{lastLangData.icon}</span>
+                  <div>
+                    <h3 style={{ fontSize: 18 }}>{lastLangData.name}</h3>
+                    <div style={{ fontSize: 12, color: 'var(--text-med)', marginTop: 4 }}>
+                      Level {progress[lastLang]?.currentLevel || 1} of 300
+                    </div>
+                  </div>
+                </div>
+                <div className="btn btn-primary btn-sm" style={{ padding: '10px 20px' }}>Resume</div>
+              </div>
+              <div style={{ marginTop: 16 }}>
+                <ProgressBar value={calcLangPercent(progress, lastLang)} />
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Language grid */}
-        <div style={{ marginBottom: 4 }}>
-          <div style={{ fontWeight: 700, fontSize: 12, color: 'var(--text2)', marginBottom: 12, letterSpacing: 2 }}>// CHOOSE LANGUAGE</div>
-          <div className="grid-2">
+        {/* All Paths */}
+        <div className="animate-in" style={{ animationDelay: '0.2s' }}>
+          <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--text-low)', textTransform: 'uppercase', letterSpacing: 1.5, display: 'block', marginBottom: 16, paddingLeft: 4 }}>Explore Languages</span>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {LANGUAGES.map((lang) => {
               const pct = calcLangPercent(progress, lang.id);
-              const lp  = progress[lang.id];
+              const isLast = lang.id === lastLang;
+              if (isLast) return null;
+
               return (
-                <div key={lang.id} className={`lang-card ${lastLang === lang.id ? 'active' : ''}`} onClick={() => goToMap(lang.id)}>
-                  <div style={{ fontSize: 38, marginBottom: 8 }}>{lang.icon}</div>
-                  <div style={{ fontWeight: 800, fontSize: 14 }}>{lang.name}</div>
-                  <div style={{ color: 'var(--text2)', fontSize: 11, marginTop: 2, marginBottom: 10 }}>{lang.desc}</div>
-                  <ProgressBar value={pct} />
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 6, fontSize: 11 }}>
-                    <span style={{ color: 'var(--text3)' }}>{pct}% done</span>
-                    {lp && <span style={{ color: 'var(--accent)', fontWeight: 700 }}>Lv {lp.currentLevel || 1}</span>}
+                <div key={lang.id} className="card card-hover" onClick={() => goToMap(lang.id)} style={{ padding: '16px 20px', background: 'var(--bg-soft)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                    <span style={{ fontSize: 24 }}>{lang.icon}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontWeight: 700, fontSize: 15, color: 'var(--text-high)' }}>{lang.name}</span>
+                        <span style={{ fontSize: 11, color: 'var(--text-low)', fontWeight: 800 }}>{pct}%</span>
+                      </div>
+                      <div style={{ marginTop: 8 }}>
+                        <ProgressBar value={pct} />
+                      </div>
+                    </div>
                   </div>
                 </div>
               );
             })}
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="grid-3" style={{ marginTop: 20 }}>
-          <div className="stat-card">
-            <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--accent)' }}>{Object.keys(progress).length}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Languages</div>
-          </div>
-          <div className="stat-card">
-            <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--yellow)' }}>🔥{streak}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Day Streak</div>
-          </div>
-          <div className="stat-card">
-            <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--blue)' }}>⚡{xp}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Total XP</div>
-          </div>
-        </div>
-
-        {/* Motivational footer */}
-        <div style={{ marginTop: 20, padding: '14px 16px', background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: 12, display: 'flex', gap: 12, alignItems: 'center' }}>
-          <Bunny size={36} mood="happy" animate={false} />
-          <div style={{ fontSize: 12, color: 'var(--text2)', lineHeight: 1.5 }}>
-            <span style={{ color: 'var(--accent)', fontWeight: 700 }}>// ByteBunny tip:</span>{' '}
-            {streak === 0 ? "Start your first lesson today — even 5 minutes counts! 🐰" :
-             streak < 3   ? `${streak} day streak! Momentum is building 🔥` :
-             streak < 7   ? `${streak} days strong! You're forming a habit 💪` :
-             `${streak} days! You're a coding machine! 🚀`}
           </div>
         </div>
       </div>

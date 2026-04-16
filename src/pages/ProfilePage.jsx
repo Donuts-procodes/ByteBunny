@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useAppStore } from '../stores/appStore';
-import { LANGUAGES, calcLangPercent } from '../data/levels';
+import { useAppStore } from '../stores/enhanced-appStore';
+import { LANGUAGES, calcLangPercent } from '../data/enhanced-levels';
 import { Bunny, BottomNav, ProgressBar, SettingsModal } from '../components/UI';
 
 export default function ProfilePage() {
@@ -31,122 +31,98 @@ export default function ProfilePage() {
 
   return (
     <div className="page">
-      <div className="page-content">
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
-          <div style={{ fontWeight: 800, fontSize: 16 }}>// PROFILE</div>
-          <button className="btn btn-ghost btn-sm" onClick={() => setShowSettings(true)} style={{ fontSize: 18 }}>⚙️</button>
+      {/* Topbar */}
+      <div className="topbar">
+        <span style={{ fontWeight: 800, fontSize: 18, flex: 1, letterSpacing: 1 }}>// PROFILE</span>
+        <button className="btn btn-ghost btn-sm" onClick={() => setShowSettings(true)} style={{ padding: '8px', minWidth: 40 }}>⚙️</button>
+      </div>
+
+      <div className="page-content scroll-area">
+        {/* User Header Card */}
+        <div className="card animate-in" style={{ marginBottom: 24, textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', top: -20, right: -20, fontSize: 120, opacity: 0.03, transform: 'rotate(15deg)', pointerEvents: 'none' }}>🐰</div>
+          <div style={{ width: 100, height: 100, borderRadius: '50%', background: 'var(--bg-soft)', margin: '0 auto 16px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 52, border: '4px solid var(--primary)', boxShadow: '0 0 20px var(--primary-glow)' }}>
+            {user?.avatar ? <img src={user.avatar} style={{ width: '100%', height: '100%', borderRadius: '50%' }} /> : '🐰'}
+          </div>
+          <h2 style={{ fontSize: 24, marginBottom: 4 }}>{user?.username}</h2>
+          <p style={{ color: 'var(--text-med)', fontSize: 14, fontWeight: 600 }}>{user?.email || user?.phone}</p>
+          <div style={{ marginTop: 16, display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+            {badges.map((b) => (
+              <span key={b.label} className="badge badge-accent" style={{ fontSize: 10 }}>{b.label}</span>
+            ))}
+          </div>
         </div>
 
-        {/* Avatar card */}
-        <div className="card" style={{ textAlign: 'center', marginBottom: 20, background: 'linear-gradient(135deg,rgba(0,255,136,0.06),rgba(88,166,255,0.06))' }}>
-          <Bunny size={88} mood="happy" animate />
-          <div style={{ fontSize: 24, fontWeight: 800, marginTop: 10 }}>{user?.username}</div>
-          <div style={{ color: 'var(--text2)', fontSize: 12, marginTop: 4 }}>{user?.email || user?.phone}</div>
-          <div style={{ color: 'var(--text3)', fontSize: 11, marginTop: 2 }}>
-            Joined {user?.joinDate ? new Date(user.joinDate).toLocaleDateString() : 'today'}
-          </div>
-
-          {/* Badges */}
-          {badges.length > 0 && (
-            <div style={{ display: 'flex', gap: 6, justifyContent: 'center', marginTop: 14, flexWrap: 'wrap' }}>
-              {badges.map((b) => (
-                <span key={b.label} className={`badge ${b.color}`}>{b.label}</span>
-              ))}
+        {/* Global Stats Grid */}
+        <div className="animate-in" style={{ animationDelay: '0.1s', marginBottom: 32 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="card" style={{ padding: 16, textAlign: 'center', background: 'var(--bg-soft)' }}>
+              <div style={{ fontSize: 24, marginBottom: 4 }}>⚡</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--primary)' }}>{xp}</div>
+              <div className="stat-label">Total XP</div>
             </div>
-          )}
-        </div>
-
-        {/* Stats grid */}
-        <div className="grid-2" style={{ marginBottom: 20 }}>
-          <div className="stat-card">
-            <div style={{ fontSize: 30, fontWeight: 800, color: 'var(--accent)' }}>{xp}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>⚡ Total XP</div>
-          </div>
-          <div className="stat-card">
-            <div style={{ fontSize: 30, fontWeight: 800, color: 'var(--orange)' }}>🔥{streak}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Day Streak</div>
-          </div>
-          <div className="stat-card">
-            <div style={{ fontSize: 30, fontWeight: 800, color: 'var(--blue)' }}>{totalLevels}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Levels Done</div>
-          </div>
-          <div className="stat-card">
-            <div style={{ fontSize: 30, fontWeight: 800, color: 'var(--purple)' }}>{langs}</div>
-            <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 4 }}>Languages</div>
+            <div className="card" style={{ padding: 16, textAlign: 'center', background: 'var(--bg-soft)' }}>
+              <div style={{ fontSize: 24, marginBottom: 4 }}>🔥</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--warning)' }}>{streak}</div>
+              <div className="stat-label">Day Streak</div>
+            </div>
+            <div className="card" style={{ padding: 16, textAlign: 'center', background: 'var(--bg-soft)' }}>
+              <div style={{ fontSize: 24, marginBottom: 4 }}>🎯</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--xp-blue)' }}>{totalLevels}</div>
+              <div className="stat-label">Levels Done</div>
+            </div>
+            <div className="card" style={{ padding: 16, textAlign: 'center', background: 'var(--bg-soft)' }}>
+              <div style={{ fontSize: 24, marginBottom: 4 }}>🗺️</div>
+              <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--primary-light)' }}>{langs}</div>
+              <div className="stat-label">Paths Started</div>
+            </div>
           </div>
         </div>
 
-        {/* XP level indicator */}
-        <div className="card" style={{ marginBottom: 20 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8, fontSize: 13 }}>
-            <span style={{ fontWeight: 700 }}>⚡ XP Progress</span>
-            <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{xp} / {Math.ceil(xp / 100) * 100} XP</span>
-          </div>
-          <ProgressBar value={(xp % 100)} />
-          <div style={{ fontSize: 11, color: 'var(--text3)', marginTop: 6 }}>
-            {100 - (xp % 100)} XP to next rank
-          </div>
-        </div>
+        {/* Language Progress */}
+        <div className="animate-in" style={{ animationDelay: '0.2s' }}>
+          <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--text-low)', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 16, paddingLeft: 4 }}>Learning Progress</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {LANGUAGES.map((lang) => {
+              const lp   = progress[lang.id];
+              if (!lp) return null;
+              
+              const done = Object.keys(lp.completedLevels || {}).length;
+              const pct  = calcLangPercent(progress, lang.id);
 
-        {/* Language progress */}
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontWeight: 700, fontSize: 12, color: 'var(--text2)', marginBottom: 12, letterSpacing: 2 }}>// LANGUAGE PROGRESS</div>
-          {LANGUAGES.map((lang) => {
-            const pct  = calcLangPercent(progress, lang.id);
-            const lp   = progress[lang.id];
-            const done = lp ? Object.keys(lp.completedLevels || {}).length : 0;
-            return (
-              <div key={lang.id} style={{ marginBottom: 14 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5, fontSize: 13 }}>
-                  <span style={{ fontWeight: 600 }}>{lang.icon} {lang.name}</span>
-                  <span style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <span style={{ color: 'var(--text3)', fontSize: 11 }}>{done}/50 levels</span>
-                    <span style={{ color: 'var(--accent)', fontWeight: 700 }}>{pct}%</span>
-                  </span>
-                </div>
-                <ProgressBar value={pct} />
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Streak calendar (last 7 days visual) */}
-        <div className="card" style={{ marginBottom: 20 }}>
-          <div style={{ fontWeight: 700, marginBottom: 12, fontSize: 13 }}>🔥 Weekly Streak</div>
-          <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
-            {['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].map((day, i) => {
-              const active = i < (streak % 7 || 7);
               return (
-                <div key={day} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 8, background: active ? 'var(--accent)' : 'var(--bg3)', border: `1px solid ${active ? 'var(--accent2)' : 'var(--border)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>
-                    {active ? '🔥' : ''}
+                <div key={lang.id} className="card" style={{ padding: '16px 20px', background: 'var(--bg-soft)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 12 }}>
+                    <span style={{ fontSize: 24 }}>{lang.icon}</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ fontWeight: 700, fontSize: 15 }}>{lang.name}</span>
+                        <span style={{ fontSize: 11, color: 'var(--primary)', fontWeight: 800 }}>{pct}%</span>
+                      </div>
+                    </div>
                   </div>
-                  <div style={{ fontSize: 9, color: 'var(--text3)' }}>{day}</div>
+                  <ProgressBar value={pct} />
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 8 }}>
+                    <span style={{ fontSize: 11, color: 'var(--text-low)', fontWeight: 700 }}>{done}/300 Levels</span>
+                    <span style={{ fontSize: 11, color: 'var(--text-low)', fontWeight: 700 }}>Lv. {lp.currentLevel || 1}</span>
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
 
-//
-        {/* Admin panel — only visible to admins */}
-        {user?.isAdmin && (
-          <button
-            className="btn btn-outline btn-full"
-            onClick={() => setPage('admin')}
-            style={{ marginBottom: 10 }}
-          >
-            🔑 Admin Panel
+        {/* Account Actions */}
+        <div className="animate-in" style={{ animationDelay: '0.3s', marginTop: 40, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {user?.isAdmin && (
+            <button className="btn btn-secondary btn-full" onClick={() => setPage('admin')}>
+              🔑 Admin Dashboard
+            </button>
+          )}
+          <button className="btn btn-secondary btn-full" onClick={logout} style={{ color: 'var(--error)', borderColor: 'rgba(255,75,75,0.2)' }}>
+            🚪 Sign Out of ByteBunny
           </button>
-        )}
-
-//
-////
-        {/* Logout */}
-        <button className="btn btn-danger btn-full" onClick={logout}>
-          🚪 Log Out
-        </button>
+        </div>
       </div>
 
       <BottomNav />

@@ -24,7 +24,7 @@ export default function WelcomePage({ onLogin, onSignup }) {
 
         <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 16, flexWrap: 'wrap' }}>
           <span className="badge badge-green">🐰 Bunny-powered</span>
-          <span className="badge badge-blue">50 Levels</span>
+          <span className="badge badge-blue">300 Levels</span>
           <span className="badge badge-purple">6 Languages</span>
           <span className="badge badge-orange">Rust + Tauri</span>
         </div>

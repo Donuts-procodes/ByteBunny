@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useAppStore } from '../stores/appStore';
+import { useAppStore } from '../stores/enhanced-appStore';
 import { db } from '../lib/firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { LANGUAGES, invalidateAdminLevelCache } from '../data/levels';
+import { LANGUAGES, invalidateAdminLevelCache } from '../data/enhanced-levels';
 import { BottomNav } from '../components/UI';
 
 // ── Constants extracted outside component to prevent re-creation on render ──

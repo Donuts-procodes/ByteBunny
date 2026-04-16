@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
-import { useAppStore } from './stores/appStore';
+import { useAppStore } from './stores/enhanced-appStore';
 import { ToastContainer, Scanline } from './components/UI';
 import LoadingScreen from './pages/LoadingScreen';
 import WelcomePage  from './pages/WelcomePage';
 import { LoginPage, SignupPage } from './pages/AuthPages';
 import HomePage    from './pages/HomePage';
 import MapPage     from './pages/MapPage';
-import LevelPage   from './pages/LevelPage';
+import LevelPage   from './pages/enhanced-LevelPage.jsx';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage   from './pages/AdminPage';
 

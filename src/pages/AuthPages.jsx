@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAppStore } from "../stores/appStore";
+import { useAppStore } from "../stores/enhanced-appStore";
 import { Bunny } from "../components/UI";
 // 👇 Import Firebase Auth utilities directly
 import { auth } from "../lib/firebase"; 

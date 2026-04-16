@@ -46,7 +46,6 @@
 | Node | ≥ 18    | https://nodejs.org |
 | npm  | ≥ 9     | bundled with Node |
 | Tauri CLI | 2.x | `npm install -g @tauri-apps/cli` |
-////
 
 ---
 
@@ -140,7 +139,6 @@ Complete level → pushToFirestore(/users/{uid})
                          ↓
              UI updates live across devices ✅
 ```
-//
 # 1. Clone / unzip the project
 cd bytebunny
 
@@ -151,11 +149,12 @@ npm install
 npm run tauri dev
 
 # 4. Build production app
+```
 npm run tauri build
 ```
 
 The built installers will be in `src-tauri/target/release/bundle/`.
-////
+
 
 ---
 
@@ -163,7 +162,6 @@ The built installers will be in `src-tauri/target/release/bundle/`.
 
 ```
 bytebunny/
-//
 ├── src/
 │   ├── lib/firebase.js          ← Config, auth helpers, Firestore push/subscribe
 │   ├── stores/appStore.js       ← Zustand + Firebase (source of truth)
@@ -179,7 +177,6 @@ bytebunny/
 ├── src-tauri/src/lib.rs         ← Rust: validate_password, scoring, xp calc
 ├── firestore.rules              ← Deploy to Firebase Console
 └── package.json                 ← firebase ^10 included
-//
 ├── src/                        # React frontend
 │   ├── main.jsx                # Entry point
 │   ├── App.jsx                 # Page router
@@ -212,12 +209,10 @@ bytebunny/
 ├── index.html                  # HTML shell
 ├── vite.config.js              # Vite bundler config
 └── package.json                # Node dependencies
-////
 ```
 
 ---
 
-//
 ## 🦀 Rust Commands
 
 | Command | Returns |
@@ -226,7 +221,6 @@ bytebunny/
 | `calculate_level_score(hearts, max, attempts)` | Score % |
 | `get_xp_for_level(level_id, score, base_xp)` | XP earned |
 | `get_app_version()` | `"0.1.0"` |
-//
 ## 🦀 Rust Commands Available
 
 | Command | Description |
@@ -241,17 +235,15 @@ Call from React via:
 import { invoke } from '@tauri-apps/api/core';
 const strength = await invoke('validate_password', { password: 'MyPass1!' });
 ```
-////
 
 ---
 
 ## 🎨 Tech Stack
 
-//
 Tauri 2 (Rust) · Firebase 10 (Auth + Firestore) · React 18 · Vite · Zustand · JetBrains Mono
 
 MIT 🐰
-//
+
 | Layer | Tech |
 |-------|------|
 | Desktop shell | Tauri 2 (Rust) |
@@ -298,4 +290,4 @@ All colors are CSS variables in `src/styles/globals.css` under `:root` (dark) an
 ## 📄 License
 
 MIT — free to use, modify, and ship 🐰
-////
+
