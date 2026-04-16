@@ -2130,127 +2130,118 @@ const TYPESCRIPT_QUESTIONS = {
 
 const CPP_QUESTIONS = {
   BEGINNER: [
-    {
-      q: "What is C++?",
-      opts: [
-        "Object-oriented language",
-        "Extensions to C",
-        "Compiled language",
-        "All of above"
-      ],
-      ans: 3,
-      topic: "Basics"
-    },
+    { q: "What is C++?", opts: ["Object-oriented language", "Extensions to C", "Compiled language", "All of above"], ans: 3, topic: "Basics" },
+    { q: "Which operator is used for input in C++?", opts: ["<<", ">>", "<", ">"], ans: 1, topic: "I/O" },
+    { q: "How do you declare an integer variable?", opts: ["int x;", "integer x;", "var x;", "x = int;"], ans: 0, topic: "Variables" },
+    { q: "Which header file is used for input/output?", opts: ["<stdio.h>", "<iostream>", "<conio.h>", "<stdlib.h>"], ans: 1, topic: "Basics" },
+    { q: "What is the correct syntax for a main function?", opts: ["void main()", "int main()", "main()", "int main(void)"], ans: 1, topic: "Basics" },
+    { q: "What defines a block of code in C++?", opts: ["[]", "{}", "()", "<>"], ans: 1, topic: "Syntax" },
+    { q: "How do you add a single-line comment?", opts: ["# comment", "/* comment */", "// comment", "-- comment"], ans: 2, topic: "Syntax" },
+    { q: "What is the size of 'char' in C++?", opts: ["1 byte", "2 bytes", "4 bytes", "8 bytes"], ans: 0, topic: "Data Types" },
+    { q: "What is the boolean type in C++?", opts: ["boolean", "bool", "bit", "logic"], ans: 1, topic: "Data Types" },
+    { q: "Which keyword is used for constants?", opts: ["const", "final", "static", "fixed"], ans: 0, topic: "Variables" },
   ],
   INTERMEDIATE: [
-    {
-      q: "What is STL?",
-      opts: [
-        "Standard Template Library",
-        "Collections framework",
-        "Data structures",
-        "All of above"
-      ],
-      ans: 3,
-      topic: "Libraries"
-    },
+    { q: "What is STL?", opts: ["Standard Template Library", "Collections framework", "Data structures", "All of above"], ans: 3, topic: "Libraries" },
+    { q: "What is a pointer in C++?", opts: ["Variable address", "Special variable", "Memory locator", "All of above"], ans: 3, topic: "Pointers" },
+    { q: "What is a reference in C++?", opts: ["An alias for a variable", "A pointer", "A new variable", "A memory address"], ans: 0, topic: "References" },
+    { q: "What is function overloading?", opts: ["Multiple functions with same name", "Too many functions", "Fast functions", "Recursive functions"], ans: 0, topic: "Functions" },
+    { q: "What is a constructor?", opts: ["Builds things", "Initializes object members", "Destroyer", "Class method"], ans: 1, topic: "OOP" },
+    { q: "What is a destructor?", opts: ["Cleans up resources", "Deletes objects", "Final method", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is encapsulation?", opts: ["Hiding data", "Grouping data and methods", "Securing class", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is inheritance?", opts: ["Creating sub-classes", "Code reuse", "Base/Derived relationship", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is 'this' pointer?", opts: ["Refers to current instance", "Refers to parent", "Global pointer", "Static pointer"], ans: 0, topic: "OOP" },
+    { q: "What is 'new' keyword?", opts: ["Dynamic memory allocation", "Creating objects", "Allocates on heap", "All of above"], ans: 3, topic: "Memory" },
   ],
   ADVANCED: [
-    {
-      q: "What is template?",
-      opts: [
-        "Code template",
-        "Generic programming",
-        "Compile-time polymorphism",
-        "All of above"
-      ],
-      ans: 3,
-      topic: "Advanced"
-    },
+    { q: "What is template?", opts: ["Code template", "Generic programming", "Compile-time polymorphism", "All of above"], ans: 3, topic: "Advanced" },
+    { q: "What is a virtual function?", opts: ["Base class function for override", "Fake function", "Static function", "Inline function"], ans: 0, topic: "Polymorphism" },
+    { q: "What is an abstract class?", opts: ["Class with pure virtual function", "Hidden class", "Concept class", "Non-instantiable"], ans: 0, topic: "OOP" },
+    { q: "What is the Diamond Problem?", opts: ["Multiple inheritance conflict", "Complexity issue", "Looping", "Memory leak"], ans: 0, topic: "Inheritance" },
+    { q: "What is RAII in C++?", opts: ["Resource Acquisition Is Initialization", "Memory management", "Object lifetime control", "All of above"], ans: 3, topic: "Memory" },
+    { q: "What is a lambda expression?", opts: ["Anonymous function", "Fast function", "Mathematical function", "Library tool"], ans: 0, topic: "C++11" },
+    { q: "What is smart pointer?", opts: ["Automated memory management", "Unique_ptr, shared_ptr", "Heap safety", "All of above"], ans: 3, topic: "Memory" },
+    { q: "What is SFINAE?", opts: ["Substitution Failure Is Not An Error", "Template rule", "Type checking", "Compiler flag"], ans: 0, topic: "Templates" },
+    { q: "What is 'move' semantics?", opts: ["Transferring resources instead of copying", "Efficiency gain", "&& operator", "All of above"], ans: 3, topic: "C++11" },
+    { q: "What is a friend function?", opts: ["Non-member with private access", "Global function", "Internal function", "Member function"], ans: 0, topic: "OOP" },
   ]
 };
 
 const JAVA_QUESTIONS = {
   BEGINNER: [
-    {
-      q: "What runs Java code?",
-      opts: [
-        "JVM",
-        "Java Virtual Machine",
-        "Platform independent",
-        "All of above"
-      ],
-      ans: 3,
-      topic: "Basics"
-    },
+    { q: "What runs Java code?", opts: ["JVM", "Java Virtual Machine", "Platform independent", "All of above"], ans: 3, topic: "Basics" },
+    { q: "What is the file extension for Java?", opts: [".java", ".js", ".class", ".jv"], ans: 0, topic: "Basics" },
+    { q: "Which keyword is used for classes?", opts: ["class", "struct", "object", "type"], ans: 0, topic: "Basics" },
+    { q: "How do you output text?", opts: ["System.out.println()", "print()", "console.log()", "echo()"], ans: 0, topic: "I/O" },
+    { q: "What is the starting point of a program?", opts: ["start()", "main()", "init()", "run()"], ans: 1, topic: "Basics" },
+    { q: "Which data type stores decimals?", opts: ["int", "double", "char", "boolean"], ans: 1, topic: "Data Types" },
+    { q: "How do you declare a string?", opts: ["String s = \"\";", "str s = \"\";", "char s[] = \"\";", "text s = \"\";"], ans: 0, topic: "Data Types" },
+    { q: "Which operator is used for addition?", opts: ["+", "-", "*", "/"], ans: 0, topic: "Operators" },
+    { q: "What is boolean?", opts: ["true/false", "0/1", "yes/no", "on/off"], ans: 0, topic: "Data Types" },
+    { q: "How do you write a comment?", opts: ["//", "#", "--", "/*"], ans: 0, topic: "Syntax" },
   ],
   INTERMEDIATE: [
-    {
-      q: "What is inheritance?",
-      opts: [
-        "Getting from parent",
-        "Extending class",
-        "Code reuse",
-        "B and C"
-      ],
-      ans: 3,
-      topic: "OOP"
-    },
+    { q: "What is inheritance?", opts: ["Getting from parent", "Extending class", "Code reuse", "B and C"], ans: 3, topic: "OOP" },
+    { q: "What is an Interface?", opts: ["Method contract", "Blueprint for class", "Abstract type", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is Polymorphism?", opts: ["Many forms", "Overloading/Overriding", "Dynamic behavior", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is 'static' keyword?", opts: ["Belongs to class", "Fixed value", "Not an instance member", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is an Array?", opts: ["Fixed size collection", "Ordered data", "Object with indices", "All of above"], ans: 3, topic: "Data Structures" },
+    { q: "What is ArrayList?", opts: ["Resizable array", "Dynamic collection", "Java Collection API", "All of above"], ans: 3, topic: "Collections" },
+    { q: "What is 'super' keyword?", opts: ["Refers to parent", "Best keyword", "Global ref", "Static ref"], ans: 0, topic: "OOP" },
+    { q: "What is Exception handling?", opts: ["try-catch blocks", "Handling errors", "Runtime safety", "All of above"], ans: 3, topic: "Exceptions" },
+    { q: "What is a Constructor?", opts: ["Initializes objects", "Method with same name as class", "Runs on 'new'", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is encapsulation?", opts: ["Private members", "Getter/Setter usage", "Data hiding", "All of above"], ans: 3, topic: "OOP" },
   ],
   ADVANCED: [
-    {
-      q: "What is reflection?",
-      opts: [
-        "Mirror effect",
-        "Runtime inspection",
-        "Dynamic loading",
-        "B and C"
-      ],
-      ans: 3,
-      topic: "Advanced"
-    },
+    { q: "What is reflection?", opts: ["Mirror effect", "Runtime inspection", "Dynamic loading", "B and C"], ans: 3, topic: "Advanced" },
+    { q: "What is Garbage Collection?", opts: ["Auto memory management", "Cleaning up memory", "Heap management", "All of above"], ans: 3, topic: "Memory" },
+    { q: "What is a Thread?", opts: ["Concurrent task", "Execution unit", "Multi-tasking tool", "All of above"], ans: 3, topic: "Concurrency" },
+    { q: "What is 'synchronized'?", opts: ["Thread safety", "Mutual exclusion", "Locks object", "All of above"], ans: 3, topic: "Concurrency" },
+    { q: "What is Generics?", opts: ["Type safety for collections", "<T> syntax", "Reusable code", "All of above"], ans: 3, topic: "Advanced" },
+    { q: "What is Lambda expression?", opts: ["Functional programming tool", "Short function syntax", "Java 8 feature", "All of above"], ans: 3, topic: "Java 8+" },
+    { q: "What is a Stream?", opts: ["Pipeline of data", "Functional processing", "Data flow", "All of above"], ans: 3, topic: "Java 8+" },
+    { q: "What is an Inner Class?", opts: ["Class within class", "Helper class", "Scoped class", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is Serialization?", opts: ["Saving object state", "Object to byte stream", "Persistent objects", "All of above"], ans: 3, topic: "Advanced" },
+    { q: "What is JDBC?", opts: ["Java Database Connectivity", "Database API", "SQL connection tool", "All of above"], ans: 3, topic: "Database" },
   ]
 };
 
 const CSHARP_QUESTIONS = {
   BEGINNER: [
-    {
-      q: "What is C#?",
-      opts: [
-        "C Sharp language",
-        "Microsoft language",
-        ".NET framework",
-        "All of above"
-      ],
-      ans: 3,
-      topic: "Basics"
-    },
+    { q: "What is C#?", opts: ["C Sharp language", "Microsoft language", ".NET framework", "All of above"], ans: 3, topic: "Basics" },
+    { q: "What is the file extension for C#?", opts: [".cs", ".c#", ".dotnet", ".sharp"], ans: 0, topic: "Basics" },
+    { q: "Which keyword outputs text?", opts: ["Console.WriteLine()", "print()", "echo()", "Log()"], ans: 0, topic: "I/O" },
+    { q: "What is the starting method?", opts: ["Main()", "Start()", "Init()", "Run()"], ans: 0, topic: "Basics" },
+    { q: "How do you declare a variable?", opts: ["int x = 5;", "var x = 5;", "both are valid", "none"], ans: 2, topic: "Variables" },
+    { q: "What is 'string'?", opts: ["Text data type", "Array of chars", "Reference type", "All of above"], ans: 3, topic: "Data Types" },
+    { q: "Which operator is for equality?", opts: ["==", "=", "===", "equals"], ans: 0, topic: "Operators" },
+    { q: "What is 'bool'?", opts: ["true or false", "1 or 0", "yes or no", "bit"], ans: 0, topic: "Data Types" },
+    { q: "How do you add a comment?", opts: ["//", "/*", "#", "Both A and B"], ans: 3, topic: "Syntax" },
+    { q: "What is a namespace?", opts: ["Code organizer", "Logic block", "Library folder", "All of above"], ans: 3, topic: "Basics" },
   ],
   INTERMEDIATE: [
-    {
-      q: "What is LINQ?",
-      opts: [
-        "Language integrated query",
-        "Data querying",
-        "Lambda expressions",
-        "All of above"
-      ],
-      ans: 3,
-      topic: "Advanced"
-    },
+    { q: "What is LINQ?", opts: ["Language integrated query", "Data querying", "Lambda expressions", "All of above"], ans: 3, topic: "Advanced" },
+    { q: "What is an Interface in C#?", opts: ["Contract for classes", "Defines methods", "'I' prefix convention", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is a Property?", opts: ["Smart field", "Getter/Setter syntax", "Data encapsulation", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is 'static'?", opts: ["Class level member", "Not instance based", "Fixed memory", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is Inheritance?", opts: [": syntax", "Parent-Child relation", "Code sharing", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is a List<T>?", opts: ["Generic dynamic array", "Collections namespace", "Type-safe collection", "All of above"], ans: 3, topic: "Collections" },
+    { q: "What is 'using' keyword?", opts: ["Importing namespaces", "Resource cleanup", "Disposable objects", "All of above"], ans: 3, topic: "Basics" },
+    { q: "What is Exception Handling?", opts: ["try-catch-finally", "Error management", "Robust code", "All of above"], ans: 3, topic: "Exceptions" },
+    { q: "What is a Constructor?", opts: ["Initializes object", "Same name as class", "Runs on 'new'", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is 'var' keyword?", opts: ["Implicitly typed variable", "Compiler inferred", "Strongly typed", "All of above"], ans: 3, topic: "Variables" },
   ],
   ADVANCED: [
-    {
-      q: "What is async/await?",
-      opts: [
-        "Asynchronous code",
-        "Non-blocking operations",
-        "Task-based",
-        "All of above"
-      ],
-      ans: 3,
-      topic: "Async"
-    },
+    { q: "What is async/await?", opts: ["Asynchronous code", "Non-blocking operations", "Task-based", "All of above"], ans: 3, topic: "Async" },
+    { q: "What is Reflection in C#?", opts: ["Metadata inspection", "Runtime type info", "Dynamic behavior", "All of above"], ans: 3, topic: "Advanced" },
+    { q: "What is Entity Framework?", opts: ["ORM tool", "Database mapper", "ADO.NET wrapper", "All of above"], ans: 3, topic: "Database" },
+    { q: "What is a Delegate?", opts: ["Function pointer", "Type-safe callback", "Event base", "All of above"], ans: 3, topic: "Advanced" },
+    { q: "What is an Event?", opts: ["Notification system", "Based on delegates", "Pub-Sub pattern", "All of above"], ans: 3, topic: "Advanced" },
+    { q: "What is 'virtual' and 'override'?", opts: ["Polymorphism tools", "Method redefinition", "Dynamic dispatch", "All of above"], ans: 3, topic: "OOP" },
+    { q: "What is Generics in C#?", opts: ["Type safety", "Code reuse", "<T> syntax", "All of above"], ans: 3, topic: "Advanced" },
+    { q: "What is a Lambda Expression?", opts: ["=> syntax", "Short function", "Expression tree", "All of above"], ans: 3, topic: "Advanced" },
+    { q: "What is 'yield return'?", opts: ["Custom iterator", "Lazy evaluation", "Memory efficient", "All of above"], ans: 3, topic: "Advanced" },
+    { q: "What is Dependency Injection?", opts: ["Inverting control", "Decoupling classes", "Design pattern", "All of above"], ans: 3, topic: "Design Patterns" },
   ]
 };
 

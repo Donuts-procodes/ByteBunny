@@ -1,3 +1,4 @@
+import React, { useMemo } from "react";
 import { useAppStore } from "../stores/enhanced-appStore";
 
 // ── Bunny Mascot ──────────────────────────────────────────────────────────────
@@ -49,22 +50,25 @@ export function Scanline() {
 
 // ── Confetti ──────────────────────────────────────────────────────────────────
 export function Confetti() {
-  const colors = [
+  const colors = useMemo(() => [
     "#00ff88",
     "#58a6ff",
     "#bc8cff",
     "#ff7eb6",
     "#e3b341",
     "#f78166",
-  ];
-  const particles = Array.from({ length: 35 }, (_, i) => ({
+  ], []);
+
+  const particles = useMemo(() => Array.from({ length: 45 }, (_, i) => ({
     id: i,
     left: `${Math.random() * 100}%`,
     color: colors[Math.floor(Math.random() * colors.length)],
-    delay: `${Math.random() * 0.6}s`,
+    delay: `${Math.random() * 1.5}s`,
+    duration: `${Math.random() * 1.5 + 2.5}s`,
     size: `${Math.random() * 10 + 6}px`,
     shape: Math.random() > 0.5 ? "50%" : "2px",
-  }));
+  })), [colors]);
+
   return (
     <>
       {particles.map((p) => (
@@ -73,11 +77,11 @@ export function Confetti() {
           className="confetti-p"
           style={{
             left: p.left,
-            top: "-20px",
             background: p.color,
             width: p.size,
             height: p.size,
             animationDelay: p.delay,
+            animationDuration: p.duration,
             borderRadius: p.shape,
           }}
         />

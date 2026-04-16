@@ -45,37 +45,30 @@ const STRENGTH_LABELS = ["Very Weak", "Weak", "Fair", "Good", "Strong"];
 const fieldWrap = {
   display: "flex",
   flexDirection: "column",
-  gap: 6,
-  minWidth: 0,
+  gap: 8,
   width: "100%",
 };
 
 const labelStyle = {
   fontSize: 11,
-  fontWeight: 700,
-  color: "var(--text2)",
+  fontWeight: 800,
+  color: "var(--text-med)",
   letterSpacing: 1,
-  flexShrink: 0,
-};
-
-const inputOverride = {
-  width: "100%",
-  minWidth: 0,
-  boxSizing: "border-box",
+  textTransform: "uppercase",
 };
 
 // ── Password input ────────────────────────────────────────────────────────────
 function PasswordInput({ value, onChange, placeholder = "••••••••" }) {
   const [show, setShow] = useState(false);
   return (
-    <div style={{ position: "relative", width: "100%", minWidth: 0 }}>
+    <div style={{ position: "relative", width: "100%" }}>
       <input
         className="input"
         type={show ? "text" : "password"}
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        style={{ ...inputOverride, paddingRight: 44 }}
+        style={{ paddingRight: 48 }}
       />
       <button
         type="button"
@@ -83,7 +76,8 @@ function PasswordInput({ value, onChange, placeholder = "•••••••�
         style={{
           position: "absolute", right: 12, top: "50%",
           transform: "translateY(-50%)", background: "none", border: "none",
-          cursor: "pointer", color: "var(--text2)", fontSize: 16, padding: 0, lineHeight: 1,
+          cursor: "pointer", color: "var(--text-med)", fontSize: 18, padding: 8, lineHeight: 1,
+          display: "flex", alignItems: "center", justifyContent: "center"
         }}
       >
         {show ? "🙈" : "👁️"}
@@ -178,44 +172,51 @@ export function LoginPage({ onBack, onSignup }) {
   };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "24px 20px", boxSizing: "border-box", overflowY: "auto" }}>
-      <div style={{ width: "100%", maxWidth: 380, boxSizing: "border-box" }}>
-        <button className="btn btn-ghost btn-sm" onClick={onBack} style={{ marginBottom: 20 }}>← Back</button>
+    <div className="page">
+      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '40px' }}>
+        <div style={{ width: "100%", maxWidth: 380 }}>
+          <button className="btn btn-ghost btn-sm" onClick={onBack} style={{ marginBottom: 20 }}>← Back</button>
 
-        <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <Bunny size={68} mood="happy" animate={false} />
-          <h1 style={{ fontSize: 24, fontWeight: 800, marginTop: 10 }}>Welcome Back!</h1>
-          <p style={{ color: "var(--text2)", marginTop: 4, fontSize: 13 }}>Continue your coding journey 🐰</p>
-        </div>
-
-        <div className="card" style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%", boxSizing: "border-box", overflow: "hidden" }}>
-          
-          {/* 👇 Using the shared popup logic */}
-          <GoogleButton 
-            onClick={() => handleGooglePopupAuth(setGoogleLoading, addToast, login)} 
-            loading={googleLoading} 
-          />
-          
-          <Divider />
-
-          <div style={fieldWrap}>
-            <label style={labelStyle}>EMAIL, PHONE OR USERNAME</label>
-            <input className="input" placeholder="you@example.com or +91…" value={identifier} onChange={(e) => setIdentifier(e.target.value)} onKeyDown={(e) => e.key === "Enter" && handleEmailLogin()} style={inputOverride} />
+          <div style={{ textAlign: "center", marginBottom: 24 }}>
+            <Bunny size={68} mood="happy" animate={false} />
+            <h1 style={{ fontSize: 24, fontWeight: 800, marginTop: 10 }}>Welcome Back!</h1>
+            <p style={{ color: "var(--text2)", marginTop: 4, fontSize: 13 }}>Continue your coding journey 🐰</p>
           </div>
 
-          <div style={fieldWrap}>
-            <label style={labelStyle}>PASSWORD</label>
-            <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
+          <div className="card" style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%" }}>
+            
+            <GoogleButton 
+              onClick={() => handleGooglePopupAuth(setGoogleLoading, addToast, login)} 
+              loading={googleLoading} 
+            />
+            
+            <Divider />
+
+            <div style={fieldWrap}>
+              <label style={labelStyle}>EMAIL, PHONE OR USERNAME</label>
+              <input 
+                className="input" 
+                placeholder="you@example.com or +91…" 
+                value={identifier} 
+                onChange={(e) => setIdentifier(e.target.value)} 
+                onKeyDown={(e) => e.key === "Enter" && handleEmailLogin()} 
+              />
+            </div>
+
+            <div style={fieldWrap}>
+              <label style={labelStyle}>PASSWORD</label>
+              <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
+            </div>
+
+            <button className="btn btn-primary btn-full" onClick={handleEmailLogin} disabled={loading} style={{ marginTop: 2 }}>
+              {loading ? <BunnyLoader text="Logging in…" /> : "🔐 Login"}
+            </button>
           </div>
 
-          <button className="btn btn-primary btn-full" onClick={handleEmailLogin} disabled={loading} style={{ marginTop: 2 }}>
-            {loading ? <BunnyLoader text="Logging in…" /> : "🔐 Login"}
-          </button>
+          <p style={{ textAlign: "center", marginTop: 18, color: "var(--text2)", fontSize: 13 }}>
+            No account? <button onClick={onSignup} style={{ background: "none", border: "none", color: "var(--primary)", cursor: "pointer", fontFamily: "var(--font)", fontWeight: 700 }}>Sign up →</button>
+          </p>
         </div>
-
-        <p style={{ textAlign: "center", marginTop: 18, color: "var(--text2)", fontSize: 13 }}>
-          No account? <button onClick={onSignup} style={{ background: "none", border: "none", color: "var(--accent)", cursor: "pointer", fontFamily: "var(--font)", fontWeight: 700 }}>Sign up →</button>
-        </p>
       </div>
     </div>
   );
@@ -251,67 +252,68 @@ export function SignupPage({ onBack, onLogin }) {
   ];
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", padding: "24px 20px 40px", boxSizing: "border-box", overflowY: "auto" }}>
-      <div style={{ width: "100%", maxWidth: 380, boxSizing: "border-box" }}>
-        <button className="btn btn-ghost btn-sm" onClick={onBack} style={{ marginBottom: 20 }}>← Back</button>
+    <div className="page">
+      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingBottom: '60px' }}>
+        <div style={{ width: "100%", maxWidth: 380 }}>
+          <button className="btn btn-ghost btn-sm" onClick={onBack} style={{ marginBottom: 20 }}>← Back</button>
 
-        <div style={{ textAlign: "center", marginBottom: 24 }}>
-          <Bunny size={68} mood="excited" animate={false} />
-          <h1 style={{ fontSize: 24, fontWeight: 800, marginTop: 10 }}>Join ByteBunny!</h1>
-          <p style={{ color: "var(--text2)", marginTop: 4, fontSize: 13 }}>Start your coding adventure 🚀</p>
-        </div>
-
-        <div className="card" style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%", boxSizing: "border-box", overflow: "hidden" }}>
-          
-          {/* 👇 Using the shared popup logic */}
-          <GoogleButton 
-            onClick={() => handleGooglePopupAuth(setGoogleLoading, addToast, register)} 
-            loading={googleLoading} 
-          />
-
-          <Divider />
-
-          <div style={fieldWrap}>
-            <label style={labelStyle}>USERNAME *</label>
-            <input className="input" placeholder="cool_coder_42" value={form.username} onChange={set("username")} style={inputOverride} />
+          <div style={{ textAlign: "center", marginBottom: 24 }}>
+            <Bunny size={68} mood="excited" animate={false} />
+            <h1 style={{ fontSize: 24, fontWeight: 800, marginTop: 10 }}>Join ByteBunny!</h1>
+            <p style={{ color: "var(--text2)", marginTop: 4, fontSize: 13 }}>Start your coding adventure 🚀</p>
           </div>
 
-          <div style={fieldWrap}>
-            <label style={labelStyle}>EMAIL</label>
-            <input className="input" type="email" placeholder="you@example.com" value={form.email} onChange={set("email")} style={inputOverride} />
-          </div>
+          <div className="card" style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%" }}>
+            
+            <GoogleButton 
+              onClick={() => handleGooglePopupAuth(setGoogleLoading, addToast, register)} 
+              loading={googleLoading} 
+            />
 
-          <div style={fieldWrap}>
-            <label style={labelStyle}>PHONE NUMBER</label>
-            <input className="input" placeholder="+91 98765 43210" value={form.phone} onChange={set("phone")} style={inputOverride} />
-          </div>
+            <Divider />
 
-          <p style={{ fontSize: 11, color: "var(--text3)", marginTop: -6 }}>* Email or phone required</p>
-
-          <div style={fieldWrap}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <label style={labelStyle}>PASSWORD *</label>
-              {form.password && <span style={{ fontSize: 11, fontWeight: 700, color: STRENGTH_COLORS[strength - 1] || "#ff4444" }}>{STRENGTH_LABELS[strength]}</span>}
+            <div style={fieldWrap}>
+              <label style={labelStyle}>USERNAME *</label>
+              <input className="input" placeholder="cool_coder_42" value={form.username} onChange={set("username")} />
             </div>
-            <PasswordInput value={form.password} onChange={set("password")} placeholder="Min 8 chars, A-Z, 0-9, symbol" />
-            {form.password && (
-              <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
-                {[0, 1, 2, 3].map((i) => <div key={i} className="pw-bar" style={{ background: i < strength ? STRENGTH_COLORS[strength - 1] : "var(--border)" }} />)}
+
+            <div style={fieldWrap}>
+              <label style={labelStyle}>EMAIL</label>
+              <input className="input" type="email" placeholder="you@example.com" value={form.email} onChange={set("email")} />
+            </div>
+
+            <div style={fieldWrap}>
+              <label style={labelStyle}>PHONE NUMBER</label>
+              <input className="input" placeholder="+91 98765 43210" value={form.phone} onChange={set("phone")} />
+            </div>
+
+            <p style={{ fontSize: 11, color: "var(--text-low)", marginTop: -6 }}>* Email or phone required</p>
+
+            <div style={fieldWrap}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <label style={labelStyle}>PASSWORD *</label>
+                {form.password && <span style={{ fontSize: 11, fontWeight: 700, color: STRENGTH_COLORS[strength - 1] || "#ff4444" }}>{STRENGTH_LABELS[strength]}</span>}
               </div>
-            )}
-            <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 8, fontSize: 11 }}>
-              {checks.map(([label, met]) => <span key={label} style={{ color: met ? "var(--green)" : "var(--text3)" }}>{met ? "✅" : "⬜"} {label}</span>)}
+              <PasswordInput value={form.password} onChange={set("password")} placeholder="Min 8 chars, A-Z, 0-9, symbol" />
+              {form.password && (
+                <div style={{ display: "flex", gap: 4, marginTop: 6 }}>
+                  {[0, 1, 2, 3].map((i) => <div key={i} className="pw-bar" style={{ background: i < strength ? STRENGTH_COLORS[strength - 1] : "var(--border)" }} />)}
+                </div>
+              )}
+              <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 8, fontSize: 11 }}>
+                {checks.map(([label, met]) => <span key={label} style={{ color: met ? "var(--primary)" : "var(--text-low)" }}>{met ? "✅" : "⬜"} {label}</span>)}
+              </div>
             </div>
+
+            <button className="btn btn-primary btn-full" onClick={handleEmailSignup} disabled={loading} style={{ marginTop: 2 }}>
+              {loading ? <BunnyLoader text="Creating account…" /> : "🚀 Create Account"}
+            </button>
           </div>
 
-          <button className="btn btn-primary btn-full" onClick={handleEmailSignup} disabled={loading} style={{ marginTop: 2 }}>
-            {loading ? <BunnyLoader text="Creating account…" /> : "🚀 Create Account"}
-          </button>
+          <p style={{ textAlign: "center", marginTop: 18, color: "var(--text2)", fontSize: 13 }}>
+            Have an account? <button onClick={onLogin} style={{ background: "none", border: "none", color: "var(--primary)", cursor: "pointer", fontFamily: "var(--font)", fontWeight: 700 }}>Login →</button>
+          </p>
         </div>
-
-        <p style={{ textAlign: "center", marginTop: 18, color: "var(--text2)", fontSize: 13 }}>
-          Have an account? <button onClick={onLogin} style={{ background: "none", border: "none", color: "var(--accent)", cursor: "pointer", fontFamily: "var(--font)", fontWeight: 700 }}>Login →</button>
-        </p>
       </div>
     </div>
   );

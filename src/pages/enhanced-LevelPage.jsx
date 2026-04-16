@@ -227,105 +227,129 @@ export function LevelPage() {
     <div className="page" style={{ height: '100vh', width: '100vw', overflow: 'hidden', background: 'var(--bg-deep)', display: 'flex', flexDirection: 'column' }}>
       {showConfetti && <Confetti />}
       
-      {/* Header */}
-      <div className="topbar" style={{ padding: '16px 20px' }}>
-        <button className="btn btn-ghost btn-sm" onClick={() => setPage('map')} style={{ padding: '8px', minWidth: 40, fontSize: 24 }}>✕</button>
+      {/* Header - Fixed at top */}
+      <div className="topbar" style={{ padding: '12px 18px', flexShrink: 0 }}>
+        <button className="btn btn-ghost btn-sm" onClick={() => setPage('map')} style={{ padding: '6px', minWidth: 36, fontSize: 22 }}>✕</button>
         
         <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-          <div className="progress-bar" style={{ width: '100%', maxWidth: '300px', height: 12 }}>
+          <div className="progress-bar" style={{ width: '100%', maxWidth: '270px', height: 10 }}>
             <div className="progress-fill" style={{ width: `${(currentLevelId / 300) * 100}%`, background: 'var(--primary)' }} />
           </div>
         </div>
 
-        <div className="hearts-display" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--error)' }}>{hearts}</span>
-          <span style={{ fontSize: 22 }}>❤️</span>
+        <div className="hearts-display" style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <span style={{ fontSize: 16, fontWeight: 600, color: 'var(--error)' }}>{hearts}</span>
+          <span style={{ fontSize: 20 }}>❤️</span>
         </div>
       </div>
 
-      <div className="page-content animate-in" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '20px', gap: '32px', maxWidth: '500px', margin: '0 auto', overflow: 'hidden' }}>
-        
-        {/* Status Message */}
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 2 }}>{gamingStatus}</div>
-        </div>
-
-        {/* Question */}
-        <div className="card" style={{ border: '2px solid var(--border)', textAlign: 'center', padding: '32px 24px', position: 'relative' }}>
-          <div style={{ position: 'absolute', top: -12, left: '50%', transform: 'translateX(-50%)', background: 'var(--bg-card)', padding: '0 12px', fontSize: 10, fontWeight: 500, color: 'var(--text-low)', textTransform: 'uppercase' }}>
-            {currentLevel.topic}
+      {/* Main Content Area - Scrollable if needed */}
+      <div className="scroll-area animate-in" style={{ flex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}>
+        <div style={{ 
+          flex: 1, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          justifyContent: 'center', 
+          padding: '24px 20px 40px', 
+          gap: '24px', 
+          maxWidth: '480px', 
+          margin: '0 auto', 
+          width: '100%',
+          minHeight: 'min-content'
+        }}>
+          
+          {/* Status Message */}
+          <div style={{ textAlign: 'center', flexShrink: 0 }}>
+            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1.5 }}>{gamingStatus}</div>
           </div>
-          <h2 className="question" style={{ fontSize: 'min(1.4rem, 6vw)', lineHeight: 1.4, marginBottom: 0, fontWeight: 400 }}>{currentLevel.q}</h2>
-        </div>
 
-        {/* Answer Options */}
-        <div className="options-container" style={{ gap: '14px' }}>
-          {currentLevel.opts.map((opt, idx) => {
-            const isUserChoice = selectedAnswer === idx;
-            const isCorrectAns = idx === currentLevel.ans;
-            
-            let stateClass = '';
-            if (isSubmitted) {
-              if (isCorrectAns && isCorrect) stateClass = 'correct';
-              else if (isUserChoice && !isCorrect) stateClass = 'incorrect';
-            } else if (isUserChoice) {
-              stateClass = 'selected';
-            }
-
-            return (
-              <button
-                key={idx}
-                className={`option ${stateClass}`}
-                onClick={() => !isSubmitted && setSelectedAnswer(idx)}
-                disabled={isSubmitted}
-                style={{ padding: '16px 24px', minHeight: '60px', borderRadius: '16px', borderBottomWidth: isUserChoice ? '2px' : '4px', boxShadow: isUserChoice ? 'none' : '0 4px 0 var(--border)' }}
-              >
-                <span className="option-text" style={{ textAlign: 'center', width: '100%', fontWeight: 600 }}>{opt}</span>
-                {isSubmitted && isCorrectAns && isCorrect && (
-                  <span className="indicator" style={{ fontSize: 24, position: 'absolute', right: 16 }}>✅</span>
-                )}
-                {isSubmitted && isUserChoice && !isCorrect && (
-                  <span className="indicator" style={{ fontSize: 24, position: 'absolute', right: 16 }}>❌</span>
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Action Buttons */}
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '12px' }}>
-          {!isSubmitted ? (
-            <button
-              className="btn btn-primary"
-              style={{ width: '100%', height: '56px', borderRadius: '16px', fontSize: 16, borderBottom: '4px solid var(--primary-dark)' }}
-              onClick={handleSubmitAnswer}
-              disabled={selectedAnswer === null}
-            >
-              Check Answer
-            </button>
-          ) : (
-            <div className="animate-in" style={{ textAlign: 'center', width: '100%' }}>
-              {isCorrect ? (
-                <div className="badge badge-accent" style={{ fontSize: 16, padding: '12px 32px', borderRadius: '16px', width: '100%', borderBottom: '4px solid var(--primary-dark)' }}>
-                  🎯 YOU GOT IT!
-                </div>
-              ) : (
-                <button 
-                  className="btn btn-primary" 
-                  onClick={() => { setSelectedAnswer(null); setIsSubmitted(false); }}
-                  style={{ width: '100%', height: '56px', borderRadius: '16px', fontSize: 16, borderBottom: '4px solid var(--primary-dark)' }}
-                >
-                  Give it another go! 💪
-                </button>
-              )}
+          {/* Question */}
+          <div className="card" style={{ border: '1.5px solid var(--border)', textAlign: 'center', padding: '24px 20px', position: 'relative', flexShrink: 0 }}>
+            <div style={{ position: 'absolute', top: -10, left: '50%', transform: 'translateX(-50%)', background: 'var(--bg-card)', padding: '0 10px', fontSize: 9, fontWeight: 500, color: 'var(--text-low)', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+              {currentLevel.topic}
             </div>
-          )}
-        </div>
+            <h2 className="question" style={{ fontSize: 'min(1.2rem, 5.5vw)', lineHeight: 1.4, marginBottom: 0, fontWeight: 400 }}>{currentLevel.q}</h2>
+          </div>
 
-        {/* Subtle Progress Stats */}
-        <div style={{ display: 'flex', justifyContent: 'center', gap: 24, marginTop: 'auto', opacity: 0.6 }}>
-          <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-low)' }}>⚡ XP +{currentLevel.xp}</div>
-          <div style={{ fontSize: 11, fontWeight: 500, color: 'var(--text-low)' }}>🔥 {streak} DAY STREAK</div>
+          {/* Answer Options */}
+          <div className="options-container" style={{ gap: '12px', flexShrink: 0 }}>
+            {currentLevel.opts.map((opt, idx) => {
+              const isUserChoice = selectedAnswer === idx;
+              const isCorrectAns = idx === currentLevel.ans;
+              
+              let stateClass = '';
+              if (isSubmitted) {
+                if (isCorrectAns && isCorrect) stateClass = 'correct';
+                else if (isUserChoice && !isCorrect) stateClass = 'incorrect';
+              } else if (isUserChoice) {
+                stateClass = 'selected';
+              }
+
+              return (
+                <button
+                  key={idx}
+                  className={`option ${stateClass}`}
+                  onClick={() => !isSubmitted && setSelectedAnswer(idx)}
+                  disabled={isSubmitted}
+                  style={{ 
+                    padding: '12px 20px', 
+                    minHeight: '50px', 
+                    borderRadius: '12px', 
+                    borderBottomWidth: isUserChoice ? '1.5px' : '3.5px', 
+                    boxShadow: isUserChoice ? 'none' : '0 3.5px 0 var(--border)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%'
+                  }}
+                >
+                  <span className="option-text" style={{ textAlign: 'center', width: '100%', fontWeight: 500, fontSize: 14 }}>{opt}</span>
+                  {isSubmitted && isCorrectAns && isCorrect && (
+                    <span className="indicator" style={{ fontSize: 20, marginLeft: 8 }}>✅</span>
+                  )}
+                  {isSubmitted && isUserChoice && !isCorrect && (
+                    <span className="indicator" style={{ fontSize: 20, marginLeft: 8 }}>❌</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Action Buttons */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: '4px', flexShrink: 0 }}>
+            {!isSubmitted ? (
+              <button
+                className="btn btn-primary"
+                style={{ width: '100%', height: '48px', borderRadius: '12px', fontSize: 14, borderBottom: '3.5px solid var(--primary-dark)' }}
+                onClick={handleSubmitAnswer}
+                disabled={selectedAnswer === null}
+              >
+                Check Answer
+              </button>
+            ) : (
+              <div className="animate-in" style={{ textAlign: 'center', width: '100%' }}>
+                {isCorrect ? (
+                  <div className="badge badge-accent" style={{ fontSize: 14, padding: '10px 24px', borderRadius: '12px', width: '100%', borderBottom: '3.5px solid var(--primary-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '48px' }}>
+                    🎯 YOU GOT IT!
+                  </div>
+                ) : (
+                  <button 
+                    className="btn btn-primary" 
+                    onClick={() => { setSelectedAnswer(null); setIsSubmitted(false); }}
+                    style={{ width: '100%', height: '48px', borderRadius: '12px', fontSize: 14, borderBottom: '3.5px solid var(--primary-dark)' }}
+                  >
+                    Give it another go! 💪
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Subtle Progress Stats */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 20, marginTop: '12px', opacity: 0.6, flexShrink: 0 }}>
+            <div style={{ fontSize: 10, fontWeight: 500, color: 'var(--text-low)' }}>⚡ XP +{currentLevel.xp}</div>
+            <div style={{ fontSize: 10, fontWeight: 500, color: 'var(--text-low)' }}>🔥 {streak} DAY STREAK</div>
+          </div>
         </div>
       </div>
     </div>
