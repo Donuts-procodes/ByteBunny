@@ -6,6 +6,8 @@ import WelcomePage  from './pages/WelcomePage';
 import { LoginPage, SignupPage } from './pages/AuthPages';
 import HomePage    from './pages/HomePage';
 import MapPage     from './pages/MapPage';
+import CourseMenuPage from './pages/CourseMenuPage';
+import CoursePage  from './pages/CoursePage';
 import LevelPage   from './pages/enhanced-LevelPage.jsx';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage   from './pages/AdminPage';
@@ -46,6 +48,8 @@ export default function App() {
       case 'signup':  return <SignupPage  onBack={() => setPage('welcome')} onLogin={() => setPage('login')} />;
       case 'home':    return user ? <HomePage />    : null;
       case 'map':     return user ? <MapPage />     : null;
+      case 'course-menu': return user ? <CourseMenuPage /> : null;
+      case 'course':  return user ? <CoursePage />  : null;
       case 'level':   return user ? <LevelPage />   : null;
       case 'profile': return user ? <ProfilePage /> : null;
       case 'admin':   return user?.isAdmin ? <AdminPage /> : null;
@@ -54,7 +58,7 @@ export default function App() {
   };
 
   // Scanline only appears on menu/auth pages — never during gameplay
-  const MENU_PAGES = ['welcome', 'login', 'signup', 'home', 'profile'];
+  const MENU_PAGES = ['welcome', 'login', 'signup', 'home', 'profile', 'course', 'course-menu'];
 
   return (
     <>

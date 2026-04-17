@@ -96,7 +96,7 @@ export function BottomNav() {
   const setPage = useAppStore((s) => s.setPage);
   const items = [
     { id: "home", icon: "🏠", label: "Home" },
-    { id: "map", icon: "🗺️", label: "Map" },
+    { id: "course-menu", icon: "📚", label: "Course" },
     { id: "profile", icon: "🐰", label: "Profile" },
   ];
   return (

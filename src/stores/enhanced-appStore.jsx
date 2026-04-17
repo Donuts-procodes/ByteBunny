@@ -29,6 +29,7 @@ export const useAppStore = create(
 
       // Progress
       progress:  {},
+      courseProgress: {}, // { python: { basic: [lectureId1, lectureId2], ... } }
       xp:        0,
       streak:    0,
       lastLogin: '',
@@ -37,6 +38,7 @@ export const useAppStore = create(
       darkMode:       true,
       page:           'loading',
       activeLang:     null,
+      courseSelection: { lang: 'python', level: 'basic' },
       currentLevelId: null,
       toasts:         [],
 
@@ -46,6 +48,30 @@ export const useAppStore = create(
       // ── UI helpers ───────────────────────────────────────────────────────────────
       setPage:       (page) => set({ page }),
       setActiveLang: (lang) => set({ activeLang: lang }),
+      setCourseSelection: (sel) => set({ courseSelection: sel }),
+
+      // ── Course Progress ──────────────────────────────────────────────────────────
+      completeCourseLecture: (lang, level, lectureId, earnedXP = 10) => {
+        const { courseProgress, user, xp, addToast } = get();
+        const currentLangProgress = courseProgress[lang] || {};
+        const currentLevelProgress = currentLangProgress[level] || [];
+
+        if (currentLevelProgress.includes(lectureId)) return; // Already done
+
+        const updatedLevelProgress = [...currentLevelProgress, lectureId];
+        const updatedLangProgress = { ...currentLangProgress, [level]: updatedLevelProgress };
+        const updatedCourseProgress = { ...courseProgress, [lang]: updatedLangProgress };
+
+        set({ 
+          courseProgress: updatedCourseProgress,
+          xp: xp + earnedXP
+        });
+
+        if (user?.uid) {
+          pushToFirestore(user.uid, get()._snap());
+        }
+        addToast(`Lecture Completed! +${earnedXP} XP`, 'success');
+      },
 
       toggleDark: () => {
         const newDark = !get().darkMode;
@@ -70,6 +96,7 @@ export const useAppStore = create(
           streak:    s.streak,
           lastLogin: s.lastLogin,
           progress:  s.progress,
+          courseProgress: s.courseProgress,
           darkMode:  s.darkMode,
         };
       },
@@ -83,6 +110,7 @@ export const useAppStore = create(
             xp:       Math.max(local.xp, remote.xp || 0),
             streak:   Math.max(local.streak, remote.streak || 0),
             progress: mergeProgress(local.progress, remote.progress || {}),
+            courseProgress: remote.courseProgress || local.courseProgress || {},
             darkMode: remote.darkMode ?? local.darkMode,
           }));
         });
@@ -95,9 +123,10 @@ export const useAppStore = create(
             const isAdmin = ADMIN_UIDS.includes(fbUser.uid);
             const remote  = await fetchFromFirestore(fbUser.uid);
             const today   = new Date().toDateString();
-            const { progress, xp, streak, lastLogin, darkMode } = get();
+            const { progress, courseProgress, xp, streak, lastLogin, darkMode } = get();
 
             const mergedProgress = mergeProgress(progress, remote?.progress || {});
+            const mergedCourseProgress = { ...courseProgress, ...(remote?.courseProgress || {}) };
             const remoteStreak   = remote?.streak    || 0;
             const remoteXP       = remote?.xp        || 0;
             const prevLoginStr   = remote?.lastLogin || lastLogin;
@@ -138,6 +167,7 @@ export const useAppStore = create(
               authReady:    true,
               page:         'home',
               progress:     mergedProgress,
+              courseProgress: mergedCourseProgress,
               xp:           Math.max(remoteXP, xp),
               streak:       newStreak,
               lastLogin:    today,
@@ -152,6 +182,7 @@ export const useAppStore = create(
               streak:    newStreak,
               lastLogin: today,
               progress:  mergedProgress,
+              courseProgress: mergedCourseProgress,
               darkMode:  remote?.darkMode ?? darkMode,
             });
 
