@@ -2,10 +2,25 @@
 node_modules/
 dist/
 .env
-.env.local
+.env.*
+!.env.example
+
 # Rust / Tauri
 src-tauri/target/
 src-tauri/gen/
+
+# Android / iOS Build Artifacts
+*.apk
+*.aab
+*.keystore
+*.jks
+
+# Firebase
+.firebase/
+firebase-debug.log*
+.firebaserc
+google-services.json
+src-tauri/gen/android/app/google-services.json
 
 # OS
 .DS_Store
@@ -15,5 +30,5 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
-
-firebase-debug.log
+*.sublime-project
+*.sublime-workspace

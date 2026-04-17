@@ -2,15 +2,15 @@ import { Bunny, Scanline } from '../components/UI';
 
 export default function WelcomePage({ onLogin, onSignup }) {
   return (
-    <div className="page" style={{ overflow: 'hidden' }}>
+    <div className="page" style={{ overflowY: 'auto' }}>
       <Scanline />
 
       {/* Grid background */}
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px)', backgroundSize: '40px 40px', opacity: 0.25 }} />
-      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 0%, rgba(0,255,136,0.18), transparent 70%)' }} />
-      <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 80% 80%, rgba(88,166,255,0.1), transparent 60%)' }} />
+      <div style={{ position: 'fixed', inset: 0, backgroundImage: 'linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px)', backgroundSize: '40px 40px', opacity: 0.25 }} />
+      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(ellipse at 50% 0%, rgba(0,255,136,0.18), transparent 70%)' }} />
+      <div style={{ position: 'fixed', inset: 0, background: 'radial-gradient(ellipse at 80% 80%, rgba(88,166,255,0.1), transparent 60%)' }} />
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '24px', position: 'relative', zIndex: 1 }}>
+      <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '40px 24px 80px', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', maxWidth: 380, width: '100%' }} className="animate-in">
           <Bunny size={110} mood="excited" animate />
 

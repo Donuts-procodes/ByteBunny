@@ -40,6 +40,14 @@
     ]
   },
   "plugins": {
+    "deep-link": {
+      "mobile": [
+        {
+          "host": "auth",
+          "scheme": ["bytebunny"]
+        }
+      ]
+    },
     "shell": {
       "open": true
     }

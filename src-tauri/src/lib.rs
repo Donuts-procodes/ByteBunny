@@ -9,6 +9,7 @@ pub struct User {
     pub username: String,
     pub email: String,
     pub phone: String,
+    
     pub password: String,
     pub join_date: String,
 }
@@ -75,6 +76,7 @@ fn get_app_version() -> String {
 
 // ── App Setup ────────────────────────────────────────────────────────────────
 
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
 //
@@ -83,6 +85,7 @@ pub fn run() {
 //
         .plugin(tauri_plugin_store::Builder::default().build())
 ////
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             greet,

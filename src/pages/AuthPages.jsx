@@ -173,7 +173,7 @@ export function LoginPage({ onBack, onSignup }) {
 
   return (
     <div className="page">
-      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '40px' }}>
+      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '120px' }}>
         <div style={{ width: "100%", maxWidth: 380 }}>
           <button className="btn btn-ghost btn-sm" onClick={onBack} style={{ marginBottom: 20 }}>← Back</button>
 
@@ -253,7 +253,7 @@ export function SignupPage({ onBack, onLogin }) {
 
   return (
     <div className="page">
-      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingBottom: '60px' }}>
+      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingBottom: '120px' }}>
         <div style={{ width: "100%", maxWidth: 380 }}>
           <button className="btn btn-ghost btn-sm" onClick={onBack} style={{ marginBottom: 20 }}>← Back</button>
 

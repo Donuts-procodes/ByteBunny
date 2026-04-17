@@ -10,6 +10,7 @@ import {
   updateProfile,
   setPersistence,
   browserLocalPersistence,
+  signInWithCredential,
 } from 'firebase/auth';
 import {
   getFirestore,
@@ -115,8 +116,33 @@ export async function firebaseEmailLogin(email, password) {
 }
 
 export async function firebaseGoogleLogin() {
+  if (window.__TAURI_INTERNALS__) {
+    const { isMobile } = await import('@tauri-apps/api/core');
+    const { open } = await import('@tauri-apps/plugin-shell');
+    
+    if (await isMobile()) {
+      // Direct Google OAuth URL that redirects to the Firebase Auth handler
+      // which should then redirect to our deep link bytebunny://auth
+      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${import.meta.env.VITE_GOOGLE_WEB_CLIENT_ID || ''}&redirect_uri=https://${firebaseConfig.authDomain}/__/auth/handler&response_type=id_token&scope=openid%20email%20profile&nonce=bytebunny`;
+      
+      try {
+        await open(authUrl);
+        return null;
+      } catch (e) {
+        console.error('Failed to open system browser:', e);
+        throw e;
+      }
+    }
+  }
+  
   const provider = new GoogleAuthProvider();
   const cred     = await signInWithPopup(auth, provider);
+  return cred.user;
+}
+
+export async function loginWithToken(idToken) {
+  const credential = GoogleAuthProvider.credential(idToken);
+  const cred = await signInWithCredential(auth, credential);
   return cred.user;
 }
 

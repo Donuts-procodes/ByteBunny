@@ -100,10 +100,28 @@ export const useAppStore = create(
             const mergedProgress = mergeProgress(progress, remote?.progress || {});
             const remoteStreak   = remote?.streak    || 0;
             const remoteXP       = remote?.xp        || 0;
-            const prevLogin      = remote?.lastLogin || lastLogin;
-            const newStreak      = prevLogin !== today
-              ? Math.max(remoteStreak, streak) + 1
-              : Math.max(remoteStreak, streak);
+            const prevLoginStr   = remote?.lastLogin || lastLogin;
+            
+            let newStreak = remoteStreak || streak;
+
+            if (prevLoginStr && prevLoginStr !== today) {
+              const prevDate = new Date(prevLoginStr);
+              const currDate = new Date(today);
+              const diffTime = Math.abs(currDate - prevDate);
+              const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+              if (diffDays === 1) {
+                // Consecutive day
+                newStreak += 1;
+              } else if (diffDays > 1) {
+                // Streak broken
+                newStreak = 1;
+              }
+            } else if (!prevLoginStr) {
+              // First time login
+              newStreak = 1;
+            }
+            // If prevLoginStr === today, streak stays the same (already counted for today)
 
             const user = {
               uid:      fbUser.uid,
@@ -247,10 +265,25 @@ export const useAppStore = create(
         const newProgress = { ...progress, [langId]: newLangProgress };
         const totalXPGain = isCompleted && !levelData.completed ? earnedXP : (newXP - (levelData.xp || 0));
 
-        set({ progress: newProgress, xp: xp + Math.max(0, totalXPGain) });
+        const today = new Date().toDateString();
+        let updatedStreak = get().streak;
+        let updatedLastLogin = get().lastLogin;
+
+        if (isCompleted && updatedLastLogin !== today) {
+          updatedStreak += 1;
+          updatedLastLogin = today;
+        }
+
+        set({ 
+          progress: newProgress, 
+          xp: xp + Math.max(0, totalXPGain),
+          streak: updatedStreak,
+          lastLogin: updatedLastLogin
+        });
 
         if (user?.uid) {
           updateToFirestore(user.uid, langId, newLangProgress);
+          pushToFirestore(user.uid, get()._snap());
         }
       },
 
