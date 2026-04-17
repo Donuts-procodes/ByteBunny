@@ -7,7 +7,7 @@ edition = "2021"
 
 [lib]
 name = "bytebunny_lib"
-crate-type = ["staticlib", "cdylib", "rlib"]
+crate-type = ["lib"]
 
 [[bin]]
 name = "bytebunny"

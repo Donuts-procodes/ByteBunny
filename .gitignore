@@ -9,18 +9,10 @@ dist/
 src-tauri/target/
 src-tauri/gen/
 
-# Android / iOS Build Artifacts
-*.apk
-*.aab
-*.keystore
-*.jks
-
 # Firebase
 .firebase/
 firebase-debug.log*
 .firebaserc
-google-services.json
-src-tauri/gen/android/app/google-services.json
 
 # OS
 .DS_Store
