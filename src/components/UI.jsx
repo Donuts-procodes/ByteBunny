@@ -169,13 +169,22 @@ export function SettingsModal({ onClose }) {
   const darkMode = useAppStore((s) => s.darkMode);
   const toggleDark = useAppStore((s) => s.toggleDark);
   const logout = useAppStore((s) => s.logout);
+  const userAIKey = useAppStore((s) => s.userAIKey);
+  const setUserAIKey = useAppStore((s) => s.setUserAIKey);
+
+  const [tempKey, setTempKey] = React.useState(userAIKey || '');
+
+  const handleSaveKey = () => {
+    setUserAIKey(tempKey);
+    useAppStore.getState().addToast("API Key updated successfully!", "success");
+  };
 
   return (
     <div
       className="modal-overlay"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="modal">
+      <div className="modal scroll-area" style={{ maxHeight: '85vh', overflowY: 'auto' }}>
         <div
           style={{
             display: "flex",
@@ -191,6 +200,34 @@ export function SettingsModal({ onClose }) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {/* AI API Settings (Security Shield) */}
+          <div
+            style={{
+              padding: "16px",
+              background: "rgba(0, 255, 136, 0.05)",
+              borderRadius: 12,
+              border: "1px solid var(--primary-low)",
+            }}
+          >
+            <div style={{ fontWeight: 800, fontSize: 12, color: "var(--primary)", marginBottom: 8, display: "flex", alignItems: "center", gap: 6 }}>
+              <span>🛡️</span> AI SECURITY SHIELD
+            </div>
+            <p style={{ fontSize: 10, color: "var(--text2)", marginBottom: 12, lineHeight: 1.4 }}>
+              Provide your own OpenRouter key for maximum privacy & unlimited hops. Key is stored locally in your browser only.
+            </p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input 
+                type="password"
+                className="input"
+                placeholder="sk-or-v1-..."
+                value={tempKey}
+                onChange={(e) => setTempKey(e.target.value)}
+                style={{ height: 38, fontSize: 12, flex: 1 }}
+              />
+              <button className="btn btn-primary btn-sm" onClick={handleSaveKey} style={{ padding: '0 12px' }}>SAVE</button>
+            </div>
+          </div>
+
           {/* Dark mode */}
           <div
             style={{

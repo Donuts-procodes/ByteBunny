@@ -2,19 +2,24 @@ import React from 'react';
 import { useAppStore } from '../stores/enhanced-appStore';
 
 const LegalContainer = ({ title, children }) => {
-  const setPage = useAppStore(s => s.setPage);
+  const { setPage, user } = useAppStore();
+  
+  const handleBack = () => {
+    if (user) setPage('home');
+    else setPage('welcome');
+  };
   
   return (
     <div className="page">
       <div className="topbar">
-        <button className="btn btn-ghost btn-sm" onClick={() => window.history.back() || setPage('welcome')} style={{ padding: '8px', minWidth: 40, fontSize: 16 }}>←</button>
+        <button className="btn btn-ghost btn-sm" onClick={handleBack} style={{ padding: '8px', minWidth: 40, fontSize: 16 }}>←</button>
         <span style={{ fontWeight: 800, fontSize: 18, letterSpacing: 1 }}>{title}</span>
       </div>
       <div className="page-content scroll-area" style={{ paddingBottom: 100 }}>
         <div className="card" style={{ background: 'var(--bg-soft)', lineHeight: 1.6, fontSize: 14 }}>
           {children}
         </div>
-        <button className="btn btn-primary btn-full" style={{ marginTop: 24 }} onClick={() => window.history.back() || setPage('welcome')}>GOT IT, THANKS! 🐰</button>
+        <button className="btn btn-primary btn-full" style={{ marginTop: 24 }} onClick={handleBack}>GOT IT, THANKS! 🐰</button>
       </div>
     </div>
   );

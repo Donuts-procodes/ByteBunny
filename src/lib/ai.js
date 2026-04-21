@@ -6,14 +6,40 @@
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 const MODEL = "meta-llama/llama-3.3-70b-instruct";
 
+import { useAppStore } from "../stores/enhanced-appStore";
+
 /**
- * Common headers for AI requests
+ * Common headers for AI requests. 
+ * Prioritizes user-provided key for security.
  */
-const getHeaders = () => ({
-  "Authorization": `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
-  "HTTP-Referer": typeof window !== 'undefined' ? window.location.origin : 'https://bytebunny.app',
-  "Content-Type": "application/json"
-});
+const getHeaders = () => {
+  const userKey = useAppStore.getState().userAIKey;
+  const envKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+  const finalKey = userKey || envKey;
+
+  if (!finalKey) {
+    console.error("[ByteBunny Security] No OpenRouter API Key found! AI features will fail.");
+  }
+
+  return {
+    "Authorization": `Bearer ${finalKey}`,
+    "HTTP-Referer": typeof window !== 'undefined' ? window.location.origin : 'https://bytebunny.web.app',
+    "Content-Type": "application/json"
+  };
+};
+
+/**
+ * Helper to strip markdown JSON formatting if the LLM includes it
+ */
+const parseAIResponse = (content) => {
+  try {
+    const cleaned = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    return JSON.parse(cleaned);
+  } catch (err) {
+    console.error("Failed to parse AI JSON:", err, content);
+    throw new Error("Invalid AI Response format");
+  }
+};
 
 /**
  * Generates a test based on configuration
@@ -186,15 +212,83 @@ export async function validateCourseCode(lang, topic, task, code) {
 
     if (!response.ok) throw new Error("Validation failed");
     const data = await response.json();
-    return JSON.parse(data.choices[0].message.content);
+    return parseAIResponse(data.choices[0].message.content);
   } catch (error) {
     console.error("[AI Validation] Error:", error);
     return { success: false, feedback: "My logic ears are twitching... I couldn't check that! 🐰🔌" };
-  }
-}
+    }
+    }
 
-/**
- * Handles chat assistance in the coding environment
+    /**
+    * Validates test coding problems with complexity and test cases
+    */
+    export async function validateTestCode(lang, question, code, testCases) {
+      const prompt = `Act as an expert competitive programming judge and code architect for ${lang}.
+
+      PROBLEM DESCRIPTION:
+      ${question}
+
+      USER SUBMISSION:
+      \`\`\`${lang}
+      ${code}
+      \`\`\`
+
+      REQUIRED TEST CASES:
+      ${JSON.stringify(testCases)}
+
+      CRITICAL EVALUATION PARAMETERS:
+      1. Functional Correctness: Does it solve the problem described?
+      2. Edge Case Handling: Does it handle null, empty, large, or unusual inputs?
+      3. Logic Efficiency: Is the algorithm optimal?
+      4. Code Quality: Syntax errors, naming, and idiomatic ${lang} usage.
+      5. Test Case Pass Rate: Check against the provided test cases.
+
+      YOUR TASK:
+      - Run the code mentally against the test cases.
+      - Grade the submission from 0 to 100 based on your own expert parameters.
+      - If there are errors (syntax or logic), explain them clearly.
+
+      Return ONLY a valid JSON object:
+      {
+        "success": true/false (true only if passes visible cases and logic is sound),
+        "score": 0-100 (your expert grade),
+        "complexity": "O(...) time, O(...) space",
+        "testResults": [
+          { "input": "...", "expected": "...", "actual": "...", "passed": true/false, "status": "..." }
+        ],
+        "feedback": "Comprehensive feedback in bunny persona",
+        "errors": "Detailed error log if any, otherwise null"
+      }`;
+    try {
+    const response = await fetch(OPENROUTER_URL, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({
+        model: MODEL,
+        messages: [
+          { role: "system", content: "You are ByteBunny, an expert test engine who only speaks JSON." },
+          { role: "user", content: prompt }
+        ],
+        response_format: { type: "json_object" }
+      })
+    });
+
+    if (!response.ok) throw new Error("Validation failed");
+    const data = await response.json();
+    return parseAIResponse(data.choices[0].message.content);
+    } catch (error) {
+    console.error("[AI Test Validation] Error:", error);
+    return { 
+      success: false, 
+      complexity: "Unknown", 
+      testResults: testCases.map(tc => ({ ...tc, passed: false, status: "Burrow connection lost 🔌" })),
+      feedback: "My logic ears are twitching... I couldn't check that! 🐰🔌" 
+    };
+    }
+    }
+
+    /**
+    * Handles chat assistance in the coding environment
  */
 export async function getAICodingAssistance(context, messages) {
   const { lang, topic, question, code } = context;

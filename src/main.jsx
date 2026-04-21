@@ -14,7 +14,6 @@ if (import.meta.env.PROD) {
 if (window.__TAURI_INTERNALS__) {
   import('@tauri-apps/plugin-deep-link').then(({ onOpenUrl }) => {
     onOpenUrl((urls) => {
-      console.log('Opened URLs:', urls);
       for (const url of urls) {
         if (url.startsWith('bytebunny://auth')) {
           const parsedUrl = new URL(url.replace('bytebunny://', 'http://'));

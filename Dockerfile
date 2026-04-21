@@ -1,39 +1,36 @@
-# Build Stage
-FROM node:22-slim AS build-stage
-
-# Install system dependencies for Tauri & Rust
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    wget \
-    file \
-    libssl-dev \
-    libgtk-3-dev \
-    libayatana-appindicator3-dev \
-    librsvg2-dev \
-    libwebkit2gtk-4.1-dev \
-    pkg-config \
-    && rm -rf /var/lib/apt/lists/*
-
-# Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
+# Stage 1: Build the web application (Frontend)
+FROM node:22-alpine AS build-stage
 
 WORKDIR /app
 
 # Copy package files and install dependencies
 COPY package*.json ./
-RUN npm install
+RUN npm ci
 
-# Copy the rest of the application
+# Copy the rest of the application source code
 COPY . .
 
-# Build the web assets (frontend)
+# Build the web assets using Vite
 RUN npm run build
 
-# Stage 2: Serve the web version (Optional, as Tauri is usually a native app)
-# If you want to run the web version in a container:
+# Stage 2: Serve the web application with Nginx
 FROM nginx:stable-alpine AS production-stage
+
+# Copy the build output from the previous stage
 COPY --from=build-stage /app/dist /usr/share/nginx/html
+
+# Configure Nginx for a Single Page Application (SPA)
+# This ensures that deep links and client-side routing work correctly
+RUN echo 'server { \
+    listen 80; \
+    server_name _; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
+
 EXPOSE 80
+
 CMD ["nginx", "-g", "daemon off;"]

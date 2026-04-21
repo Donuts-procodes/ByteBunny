@@ -40,9 +40,10 @@ export const useAppStore = create(
       darkMode:       true,
       page:           'loading',
       activeLang:     null,
-      courseSelection: { lang: 'python', level: 'basic' },
+      courseSelection: { lang: 'python', level: 'basic', topicIdx: 0, questionIdx: 0 },
       currentLevelId: null,
       toasts:         [],
+      userAIKey:      null, // Secure user-provided OpenRouter key
 
       // Internal
       _firestoreUnsub: null,
@@ -50,7 +51,12 @@ export const useAppStore = create(
       // ── UI helpers ───────────────────────────────────────────────────────────────
       setPage:       (page) => set({ page }),
       setActiveLang: (lang) => set({ activeLang: lang }),
-      setCourseSelection: (sel) => set({ courseSelection: sel }),
+      setUserAIKey:  (key)  => set({ userAIKey: key }),
+      setCourseSelection: (sel) => set((s) => ({ 
+        courseSelection: { ...s.courseSelection, ...sel } 
+      })),
+        courseSelection: { ...s.courseSelection, ...sel } 
+      })),
 
       // ── Test History ─────────────────────────────────────────────────────────────
       addTestResult: (result) => {
@@ -382,10 +388,7 @@ export const useAppStore = create(
       goToMap: (langId) => set({ activeLang: langId, page: 'map' }),
 
       reviewTest: (testData) => {
-        set({ page: 'test' });
-        // We'll need a way to pass this data to TestPage. 
-        // Let's use a temporary state in the store.
-        set({ pendingReview: testData });
+        set({ page: 'test', pendingReview: testData });
       },
     }),
     {

@@ -156,9 +156,9 @@ export default function ProfilePage() {
           <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--text-low)', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 16, paddingLeft: 4 }}>AI Test History</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {testHistory && testHistory.length > 0 ? (
-              testHistory.slice(0, 5).map((test) => (
+              testHistory.slice(0, 10).map((test) => (
                 <div key={test.id} className="card card-hover" style={{ padding: '16px 20px', background: 'var(--bg-soft)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                     <div>
                       <div style={{ fontWeight: 800, fontSize: 14, color: 'var(--primary)', textTransform: 'uppercase' }}>
                         {test.config.language} {test.config.isMCQ ? 'MCQ' : 'PROBLEM'}
@@ -167,11 +167,17 @@ export default function ProfilePage() {
                         {new Date(test.date).toLocaleDateString()} // {test.config.difficulty}
                       </div>
                     </div>
-                    <div style={{ textAlign: 'right' }}>
+                    <div style={{ textAlign: 'right', display: 'flex', alignItems: 'center', gap: 12 }}>
                       <div style={{ fontSize: 20, fontWeight: 800, color: test.results.score >= 70 ? 'var(--success)' : 'var(--xp-blue)' }}>{test.results.score}%</div>
+                      <button 
+                        className="btn btn-secondary btn-sm" 
+                        style={{ padding: '6px 12px', fontSize: 10, borderRadius: 8 }}
+                        onClick={() => reviewTest(test)}
+                      >
+                        👁️ REVIEW
+                      </button>
                     </div>
                   </div>
-                  <button className="btn btn-secondary btn-sm" style={{ width: '100%', padding: '10px', fontSize: 11, borderRadius: 10 }} onClick={() => reviewTest(test)}>👁️ Review Answers</button>
                 </div>
               ))
             ) : (

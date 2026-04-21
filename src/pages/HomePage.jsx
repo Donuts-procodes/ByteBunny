@@ -14,6 +14,7 @@ export default function HomePage() {
   const [showSettings, setShowSettings] = useState(false);
   const [tip, setTip] = useState(null);
   const [tipLoading, setTipLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     handleGetTip();
@@ -119,14 +120,29 @@ export default function HomePage() {
           </div>
         )}
 
+        {/* Search Bar */}
+        <div className="animate-in" style={{ animationDelay: '0.15s', marginBottom: 24 }}>
+          <div style={{ position: 'relative' }}>
+            <input 
+              type="text" 
+              className="input" 
+              placeholder="Search languages... 🔍" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ paddingLeft: '44px', borderRadius: 16, height: 50, border: '2px solid var(--border)', background: 'var(--bg-soft)' }}
+            />
+            <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', opacity: 0.5, fontSize: 18 }}>🔎</span>
+          </div>
+        </div>
+
         {/* All Paths */}
         <div className="animate-in" style={{ animationDelay: '0.2s' }}>
           <span style={{ fontSize: 12, fontWeight: 800, color: 'var(--text-low)', textTransform: 'uppercase', letterSpacing: 1.5, display: 'block', marginBottom: 16, paddingLeft: 4 }}>Explore Languages</span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {LANGUAGES.map((lang) => {
+            {LANGUAGES.filter(l => l.name.toLowerCase().includes(searchQuery.toLowerCase())).map((lang) => {
               const pct = calcLangPercent(progress, lang.id);
               const isLast = lang.id === lastLang;
-              if (isLast) return null;
+              if (isLast && !searchQuery) return null;
 
               return (
                 <div key={lang.id} className="card card-hover" onClick={() => goToMap(lang.id)} style={{ padding: '16px 20px', background: 'var(--bg-soft)' }}>

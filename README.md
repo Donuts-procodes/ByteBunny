@@ -3,34 +3,28 @@
 > Learn coding languages the fun way — built with **Tauri 2 + Rust + React + Firebase**
 > Now featuring **Advanced AI Integration** for a personalized learning experience!
 
+**🌐 Web App:** [https://byte-bunny.web.app](https://byte-bunny.web.app)
+
 ---
 
 ## 🚀 What's New in v3.0.0
 
-- **✨ AI Teaching Modules**: Courses are no longer just problem statements. They are now full teaching modules with AI-generated theory, educational content, and bunny-themed encouragement.
-- **🔍 AI-Driven Validation**: Your code is now reviewed by the ByteBunny AI in real-time. Get detailed feedback on your logic directly in the terminal!
-- **🧪 Advanced AI Test Lab**: Generate custom tests for any language.
-  - **Resizable IDE**: Fully adjustable panes for Problem Description, Code Editor, and Terminal.
-  - **Flexible Layout**: Custom resizer handles to tailor your workspace.
-- **💡 AI Daily Tip Generator**: Get fresh coding tips and fun facts daily on your dashboard, powered by Llama 3.3.
-- **🔐 Enhanced Auth System**: 
-  - **Forgot Password**: New flow to reset access via email magic links.
-  - **Android Optimization**: Improved stability for mobile auth and explicit guidance for Google Sign-In issues.
-- **📊 Detailed Progress Tracking**: Restored "Language Mastery" and "Academy Progress" visualizations on the profile page.
+- **✨ AI Teaching Modules**: Courses are now full teaching modules with AI-generated theory and educational content.
+- **🔍 AI-Driven Validation**: Real-time expert code review in the terminal.
+- **🧪 Advanced AI Test Lab**: Custom challenges for any language or DSA concept with grading (0-100).
+- **💡 AI Daily Tip Generator**: Fresh coding tips powered by Llama 3.3.
+- **🔐 Enhanced Auth System**: Improved forgot password flow and persistent sessions.
+- **📊 Detailed Progress Tracking**: Visualized Language Mastery and Academy progress.
 
 ---
 
 ## ✨ Core Features
 
-- **6 Coding Languages**: Python, JavaScript, Rust, SQL, Bash, Go
-- **50 Levels per language** with progressive difficulty
-- **3-heart system** — wrong answers cost hearts; retry improves your score
-- **Daily streak tracking** with visual weekly calendar
-- **XP system** — earn points based on accuracy
-- **Dark & Light mode** toggle in Settings
-- **🔥 Firebase Auth**: Email/password + Google Sign-In, persisted across app restarts
-- **☁️ Cloud sync**: Firestore real-time — progress syncs across devices instantly
-- **Monospace throughout**: JetBrains Mono font
+- **10 Coding Languages**: Python, JavaScript, Rust, SQL, Bash, Go, TypeScript, C++, Java, C#
+- **300 Levels per language** with progressive difficulty.
+- **AI Test Lab**: Custom challenges for all languages plus **DSA Concepts**.
+- **XP & Streak system** for gamified learning.
+- **Cloud sync**: Real-time Firestore synchronization.
 
 ---
 
@@ -43,46 +37,47 @@
 | npm  | ≥ 9     | bundled with Node |
 | Tauri CLI | 2.x | `npm install -g @tauri-apps/cli` |
 
-**Android Development:** Requires Android Studio + NDK for mobile builds.
-
 ---
 
 ## 🚀 Quick Start
 
 ```bash
-# 1. Clone the project
-# 2. Install JS dependencies
 npm install
-
-# 3. Create .env file
-# Add: VITE_OPENROUTER_API_KEY=your_key_here
-
-# 4. Run in development mode (hot reload)
+# Add VITE_OPENROUTER_API_KEY to .env
 npm run tauri dev
-
-# 5. Build production app (Desktop)
-npm run tauri build
 ```
-
----
-
-## 📱 Android Authentication Note
-If you encounter "Access Denied" using Google Auth on Android, please refer to:
-[**README-ANDROID-AUTH.md**](./README-ANDROID-AUTH.md) for detailed SHA-1 registration steps.
 
 ---
 
 ## 🎨 Tech Stack
 
-- **Desktop Shell**: Tauri 2 (Rust)
+- **Desktop**: Tauri 2 (Rust)
 - **Frontend**: React 18 + Vite
-- **AI Engine**: Llama 3.3 (via OpenRouter)
-- **Backend**: Firebase (Auth + Firestore)
-- **State**: Zustand (with persistence)
-- **Styling**: Vanilla CSS (Variables for themes)
+- **AI**: Llama 3.3 (via OpenRouter)
+- **Backend**: Firebase
 
 ---
 
 ## 📄 License
 
-MIT — free to use, modify, and ship 🐰
+MIT License
+
+Copyright (c) 2026 Ayush Budhiraja
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
