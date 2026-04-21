@@ -54,7 +54,7 @@ export default function MapPage() {
     top:  i * 84 + 16,
   }));
 
-  const totalH = levels.length * 84 + 400;
+  const totalH = levels.length * 84 + 600;
 
   return (
     <div className="page">
@@ -90,7 +90,7 @@ export default function MapPage() {
           height: totalH, 
           margin: '0 auto', 
           maxWidth: 400, 
-          padding: '40px 20px 120px' 
+          padding: '40px 20px 300px' 
         }}>
 
           {/* SVG connection lines */}

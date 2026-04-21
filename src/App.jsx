@@ -12,6 +12,7 @@ import LevelPage   from './pages/enhanced-LevelPage.jsx';
 import ProfilePage from './pages/ProfilePage';
 import AdminPage   from './pages/AdminPage';
 import TestPage    from './pages/TestPage';
+import { TermsPage, PrivacyPage } from './pages/LegalPages';
 
 // Badge system imports
 import { BADGE_RULES, getLanguageMasterBadges, getAcademyGraduateBadges } from './data/badges';
@@ -28,6 +29,7 @@ function useBadgeTracker() {
     totalLectures: Object.values(courseProgress).reduce((acc, lang) => {
       return acc + Object.values(lang).reduce((lAcc, level) => lAcc + level.length, 0);
     }, 0),
+    maxLevel: Object.values(progress).reduce((max, lang) => Math.max(max, lang.currentLevel || 1), 1),
   }), [xp, streak, progress, courseProgress]);
 
   useEffect(() => {
@@ -93,6 +95,8 @@ export default function App() {
       case 'level':   return user ? <LevelPage />   : null;
       case 'test':    return user ? <TestPage />    : null;
       case 'profile': return user ? <ProfilePage /> : null;
+      case 'terms':   return <TermsPage />;
+      case 'privacy': return <PrivacyPage />;
       case 'admin':   return user?.isAdmin ? <AdminPage /> : null;
       default:        return <WelcomePage onLogin={() => setPage('login')} onSignup={() => setPage('signup')} />;
     }

@@ -18,7 +18,7 @@ const LANGUAGES = [
 ];
 
 export default function TestPage() {
-  const { setPage, addToast, addTestResult } = useAppStore();
+  const { setPage, addToast, addTestResult, darkMode } = useAppStore();
   const pendingReview = useAppStore(s => s.pendingReview);
 
   // Test Configuration State
@@ -43,36 +43,47 @@ export default function TestPage() {
   // Resizing State
   const [paneWidths, setPaneWidths] = useState({ left: 350 }); // Only need left pane width now
   const [terminalHeight, setTerminalHeight] = useState(200);
-  const [isResizing, setIsResizing] = useState(null); // 'left', 'terminal'
-
-  const handleMouseMove = (e) => {
-    if (!isResizing) return;
-    
-    if (isResizing === 'left') {
-      const newWidth = Math.max(250, Math.min(800, e.clientX));
-      setPaneWidths({ left: newWidth });
-    } else if (isResizing === 'terminal') {
-      const newHeight = Math.max(100, Math.min(window.innerHeight * 0.8, window.innerHeight - e.clientY));
-      setTerminalHeight(newHeight);
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsResizing(null);
-    document.body.style.cursor = 'default';
-  };
+  const [isResizingActive, setIsResizingActive] = useState(false);
+  const isResizing = React.useRef(null); // 'left', 'terminal'
+  const gridRef = React.useRef(null);
 
   React.useEffect(() => {
-    if (isResizing) {
-      document.body.style.cursor = isResizing === 'terminal' ? 'row-resize' : 'col-resize';
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
-    }
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
+    if (!isResizingActive) return;
+
+    const handleMouseMoveGlobal = (e) => {
+      if (!isResizing.current || !gridRef.current) return;
+      
+      const gridRect = gridRef.current.getBoundingClientRect();
+
+      if (isResizing.current === 'left') {
+        const newWidth = Math.max(200, Math.min(gridRect.width - 200, e.clientX - gridRect.left));
+        setPaneWidths({ left: newWidth });
+      } else if (isResizing.current === 'terminal') {
+        const newHeight = Math.max(40, Math.min(gridRect.height - 100, gridRect.bottom - e.clientY));
+        setTerminalHeight(newHeight);
+      }
     };
-  }, [isResizing]);
+
+    const handleMouseUpGlobal = () => {
+      isResizing.current = null;
+      setIsResizingActive(false);
+      document.body.style.cursor = 'default';
+    };
+
+    window.addEventListener('mousemove', handleMouseMoveGlobal);
+    window.addEventListener('mouseup', handleMouseUpGlobal);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMoveGlobal);
+      window.removeEventListener('mouseup', handleMouseUpGlobal);
+    };
+  }, [isResizingActive]);
+
+  const startResizing = (direction) => (e) => {
+    e.preventDefault();
+    isResizing.current = direction;
+    setIsResizingActive(true);
+    document.body.style.cursor = direction === 'terminal' ? 'row-resize' : 'col-resize';
+  };
 
   React.useEffect(() => {
     if (pendingReview) {
@@ -130,9 +141,11 @@ export default function TestPage() {
     setTimeout(() => {
       const q = questions[currentQuestionIdx];
       let out = `[Running ${config.language}...]\n`;
-      q.testCases.forEach((tc, i) => {
-        out += `\nTest Case ${i+1}:\nInput: ${tc.input}\nOutput: ${tc.output}\n✅ Carrot-tastic Pass!`;
-      });
+      if (q.testCases) {
+        q.testCases.forEach((tc, i) => {
+          out += `\nTest Case ${i+1}:\nInput: ${tc.input}\nOutput: ${tc.output}\n✅ Carrot-tastic Pass!`;
+        });
+      }
       out += "\n\nComplexity: O(N) time, O(1) space\nBurrow Efficiency: High 🥕";
       setOutput(out);
       addToast("High paw! All test cases passed! 🐰🐾", "success");
@@ -186,95 +199,135 @@ export default function TestPage() {
     addTestResult(testRecord);
     
     setTestState('result');
-    addToast("HOPPY CODING! Results are in! 🐰🎉", "success");
+    
+    if (finalResults.score >= 50) {
+      addToast("HOPPY CODING! Results are in! 🐰🎉", "success");
+    } else {
+      addToast("Whiskers! Results are in. Let's try again! 🐰🥕", "info");
+    }
   };
 
   const renderConfig = () => (
     <div className="page-content">
       <div className="animate-in" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-        <div className="card">
-          <h2 style={{ marginBottom: 20, fontSize: 20, display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span>🧪</span> AI TEST GENERATOR
+        <div className="card" style={{ padding: '32px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)', border: '1px solid var(--primary-low)' }}>
+          <h2 style={{ marginBottom: 24, fontSize: 24, display: 'flex', alignItems: 'center', gap: 12, color: 'var(--primary)', letterSpacing: 1 }}>
+            <span>🧪</span> AI TEST LAB
           </h2>
           
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
             {/* Language Selection */}
             <div>
-              <label style={{ fontSize: 12, color: 'var(--text-med)', marginBottom: 8, display: 'block', fontWeight: 700 }}>SELECT LANGUAGE</label>
-              <select 
-                className="input" 
-                value={config.language} 
-                onChange={(e) => setConfig({...config, language: e.target.value})}
-              >
-                {LANGUAGES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
-              </select>
+              <label style={{ fontSize: 11, color: 'var(--text-med)', marginBottom: 10, display: 'block', fontWeight: 800, letterSpacing: 1.5 }}>SELECT LANGUAGE</label>
+              <div style={{ position: 'relative' }}>
+                <select 
+                  className="input" 
+                  value={config.language} 
+                  onChange={(e) => setConfig({...config, language: e.target.value})}
+                  style={{ height: '52px', fontSize: 16, fontWeight: 600, paddingLeft: '48px', appearance: 'none', background: 'var(--bg-soft)' }}
+                >
+                  {LANGUAGES.map(l => <option key={l.id} value={l.id}>{l.name}</option>)}
+                </select>
+                <span style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', fontSize: 20 }}>💻</span>
+                <span style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', opacity: 0.5 }}>▼</span>
+              </div>
             </div>
 
-            {/* Type Selection - Using Checkbox style as requested */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <label style={{ fontSize: 12, color: 'var(--text-med)', display: 'block', fontWeight: 700 }}>TEST TYPE</label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px', background: 'var(--bg-soft)', borderRadius: 12, cursor: 'pointer', border: config.isMCQ ? '1px solid var(--primary)' : '1px solid var(--border)' }} onClick={() => setConfig({...config, isMCQ: true})}>
-                <input type="checkbox" checked={config.isMCQ} readOnly style={{ accentColor: 'var(--primary)' }} />
-                <span style={{ fontSize: 14, fontWeight: config.isMCQ ? 700 : 400 }}>Multiple Choice Questions (MCQ)</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px', background: 'var(--bg-soft)', borderRadius: 12, cursor: 'pointer', border: !config.isMCQ ? '1px solid var(--primary)' : '1px solid var(--border)' }} onClick={() => setConfig({...config, isMCQ: false})}>
-                <input type="checkbox" checked={!config.isMCQ} readOnly style={{ accentColor: 'var(--primary)' }} />
-                <span style={{ fontSize: 14, fontWeight: !config.isMCQ ? 700 : 400 }}>Problem Statement</span>
+            {/* Type Selection */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <label style={{ fontSize: 11, color: 'var(--text-med)', display: 'block', fontWeight: 800, letterSpacing: 1.5 }}>TEST ARCHITECTURE</label>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div 
+                  style={{ 
+                    display: 'flex', flexDirection: 'column', gap: 8, padding: '16px', 
+                    background: config.isMCQ ? 'var(--primary-low)' : 'var(--bg-soft)', 
+                    borderRadius: 16, cursor: 'pointer', border: '2px solid',
+                    borderColor: config.isMCQ ? 'var(--primary)' : 'var(--border)',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transform: config.isMCQ ? 'scale(1.02)' : 'scale(1)'
+                  }} 
+                  onClick={() => setConfig({...config, isMCQ: true})}
+                >
+                  <span style={{ fontSize: 24 }}>🔘</span>
+                  <span style={{ fontSize: 13, fontWeight: 800 }}>QUIZ MODE</span>
+                  <span style={{ fontSize: 10, opacity: 0.7 }}>Multi-choice logic</span>
+                </div>
+                <div 
+                  style={{ 
+                    display: 'flex', flexDirection: 'column', gap: 8, padding: '16px', 
+                    background: !config.isMCQ ? 'var(--primary-low)' : 'var(--bg-soft)', 
+                    borderRadius: 16, cursor: 'pointer', border: '2px solid',
+                    borderColor: !config.isMCQ ? 'var(--primary)' : 'var(--border)',
+                    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+                    transform: !config.isMCQ ? 'scale(1.02)' : 'scale(1)'
+                  }} 
+                  onClick={() => setConfig({...config, isMCQ: false})}
+                >
+                  <span style={{ fontSize: 24 }}>👨‍💻</span>
+                  <span style={{ fontSize: 13, fontWeight: 800 }}>CODE MODE</span>
+                  <span style={{ fontSize: 10, opacity: 0.7 }}>Problem solving</span>
+                </div>
               </div>
             </div>
 
             {/* Number of Questions (Slider) */}
-            <div>
-              <label style={{ fontSize: 12, color: 'var(--text-med)', marginBottom: 8, display: 'block', fontWeight: 700 }}>
-                NUMBER OF QUESTIONS: <span style={{ color: 'var(--primary)' }}>{config.numQuestions}</span>
-              </label>
+            <div style={{ padding: '8px 0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <label style={{ fontSize: 11, color: 'var(--text-med)', fontWeight: 800, letterSpacing: 1.5 }}>CHALLENGE VOLUME</label>
+                <div style={{ background: 'var(--primary)', color: 'var(--bg-deep)', padding: '4px 12px', borderRadius: 20, fontSize: 14, fontWeight: 800, boxShadow: '0 4px 10px var(--primary-glow)' }}>
+                  {config.numQuestions} Qs
+                </div>
+              </div>
               <input 
                 type="range" 
                 min="1" max="20" 
                 value={config.numQuestions} 
                 onChange={(e) => setConfig({...config, numQuestions: parseInt(e.target.value)})}
-                style={{ width: '100%', accentColor: 'var(--primary)' }}
               />
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 10, fontSize: 10, color: 'var(--text-low)', fontWeight: 700 }}>
+                <span>QUICK (1)</span>
+                <span>MARATHON (20)</span>
+              </div>
             </div>
 
             {/* Difficulty */}
             <div>
-              <label style={{ fontSize: 12, color: 'var(--text-med)', marginBottom: 8, display: 'block', fontWeight: 700 }}>DIFFICULTY</label>
-              <div style={{ display: 'flex', gap: 8 }}>
+              <label style={{ fontSize: 11, color: 'var(--text-med)', marginBottom: 12, display: 'block', fontWeight: 800, letterSpacing: 1.5 }}>DIFFICULTY LEVEL</label>
+              <div style={{ display: 'flex', gap: 10 }}>
                 {['easy', 'medium', 'hard'].map(d => (
-                  <div 
+                  <button 
                     key={d}
                     style={{ 
-                      flex: 1, 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: 6, 
-                      padding: '10px', 
-                      background: 'var(--bg-soft)', 
-                      borderRadius: 8, 
-                      cursor: 'pointer', 
-                      justifyContent: 'center',
-                      border: config.difficulty === d ? '1px solid var(--primary)' : '1px solid var(--border)'
+                      flex: 1, padding: '12px', borderRadius: 12, border: '2px solid',
+                      borderColor: config.difficulty === d ? 'var(--primary)' : 'var(--border)',
+                      background: config.difficulty === d ? 'var(--primary-low)' : 'var(--bg-soft)',
+                      color: config.difficulty === d ? 'var(--primary)' : 'var(--text-med)',
+                      fontSize: 12, fontWeight: 800, textTransform: 'uppercase', cursor: 'pointer',
+                      transition: 'all 0.2s',
+                      transform: config.difficulty === d ? 'translateY(-2px)' : 'none'
                     }}
                     onClick={() => setConfig({...config, difficulty: d})}
                   >
-                    <input type="checkbox" checked={config.difficulty === d} readOnly style={{ accentColor: 'var(--primary)' }} />
-                    <span style={{ fontSize: 12, textTransform: 'capitalize', fontWeight: config.difficulty === d ? 700 : 400 }}>{d}</span>
-                  </div>
+                    {d === 'easy' ? '🌱' : d === 'medium' ? '⚡' : '🔥'} {d}
+                  </button>
                 ))}
               </div>
             </div>
 
-            <button className="btn btn-primary" style={{ marginTop: 12, padding: 14, fontWeight: 800, letterSpacing: 1 }} onClick={handleGenerate}>
-              GENERATE TEST 🚀
+            <button 
+              className="btn btn-primary" 
+              style={{ marginTop: 12, padding: '18px', fontSize: 16, fontWeight: 800, letterSpacing: 2, borderRadius: 16 }} 
+              onClick={handleGenerate}
+            >
+              GENERATE CHALLENGE 🚀
             </button>
           </div>
         </div>
 
         {!import.meta.env.VITE_OPENROUTER_API_KEY && (
-          <div className="card" style={{ borderColor: 'var(--error)', background: 'rgba(255, 75, 75, 0.05)' }}>
-            <p style={{ color: 'var(--error)', fontSize: 12, textAlign: 'center' }}>
-              ⚠️ VITE_OPENROUTER_API_KEY is missing in .env. Generation will not work until provided.
+          <div className="card" style={{ borderColor: 'var(--error)', background: 'rgba(255, 75, 75, 0.05)', textAlign: 'center' }}>
+            <p style={{ color: 'var(--error)', fontSize: 12, fontWeight: 700 }}>
+              ⚠️ OPENROUTER API KEY MISSING
             </p>
           </div>
         )}
@@ -337,7 +390,7 @@ export default function TestPage() {
     // Problem Statement Layout (Course Area Style)
     return (
       <div className="page-content-full scroll-area" style={{ paddingBottom: 0 }}>
-        <div className="course-grid" style={{ 
+        <div className="course-grid" ref={gridRef} style={{ 
           height: 'calc(100vh - 64px)', 
           display: 'flex', 
           background: 'var(--border)',
@@ -348,7 +401,7 @@ export default function TestPage() {
             <div style={{ fontSize: 10, color: 'var(--primary)', fontWeight: 800, marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
               <span>🧩</span> PROBLEM {currentQuestionIdx + 1} OF {questions.length}
             </div>
-            <h2 style={{ fontSize: 20, marginBottom: 16, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
+            <h2 style={{ fontSize: 20, marginBottom: 16, color: 'var(--primary)', display: 'center', alignItems: 'center', gap: 8 }}>
               <span>📄</span> TASK DESCRIPTION
             </h2>
             <div style={{ lineHeight: 1.6, color: 'var(--text-high)', fontSize: 14, marginBottom: 24 }}>
@@ -408,7 +461,7 @@ export default function TestPage() {
                 <MonacoEditor
                   height="100%"
                   language={config.language}
-                  theme="vs-dark"
+                  theme={darkMode ? "vs-dark" : "light"}
                   value={answers[currentQuestionIdx] || ''}
                   onChange={(val) => setAnswers({...answers, [currentQuestionIdx]: val})}
                   options={{ minimap: { enabled: false }, fontSize: 14, fontFamily: 'var(--font-mono)', automaticLayout: true, padding: { top: 20 } }}
@@ -417,10 +470,10 @@ export default function TestPage() {
             </div>
 
             {/* Terminal Resizer */}
-            <div className="resizer-h" onMouseDown={() => setIsResizing('terminal')} />
+            <div className="resizer-h" onMouseDown={startResizing('terminal')} />
 
             <div className="terminal-container" style={{ height: terminalHeight }}>
-              <div className="editor-header" style={{ borderBottom: 'none', background: 'rgba(0,0,0,0.3)' }}>
+              <div className="editor-header" style={{ borderBottom: 'none', background: 'rgba(0,0,0,0.3)', height: 28 }}>
                 <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-med)' }}>⌨️ TERMINAL OUTPUT</span>
               </div>
               <pre className="terminal-body" style={{ fontSize: 12 }}>{output}</pre>
@@ -431,52 +484,66 @@ export default function TestPage() {
     );
   };
 
-  const renderResult = () => (
-    <div className="page-content">
-      <div className="animate-in" style={{ display: 'flex', flexDirection: 'column', gap: 24, textAlign: 'center' }}>
-        <Confetti />
-        <div className="card" style={{ padding: 40, background: 'linear-gradient(135deg, var(--bg-soft) 0%, var(--bg-deep) 100%)', border: '1px solid var(--primary-low)' }}>
-          <h2 style={{ color: 'var(--primary)', marginBottom: 10, letterSpacing: 2 }}>TEST COMPLETED! 🏁</h2>
-          <div style={{ fontSize: 64, fontWeight: 800, margin: '20px 0', color: 'var(--text-high)' }}>{results.score}%</div>
-          
-          {config.isMCQ ? (
-            <p style={{ color: 'var(--text-med)', fontSize: 16 }}>
-              You got <span style={{ color: 'var(--primary)', fontWeight: 800 }}>{results.correct}</span> out of {results.total} questions correct.
+  const renderResult = () => {
+    const isPass = results.score >= 50;
+    return (
+      <div className="page-content">
+        <div className="animate-in" style={{ display: 'flex', flexDirection: 'column', gap: 24, textAlign: 'center' }}>
+          {isPass && <Confetti />}
+          <div className="card" style={{ padding: 40, background: 'linear-gradient(135deg, var(--bg-soft) 0%, var(--bg-deep) 100%)', border: isPass ? '1px solid var(--primary-low)' : '1px solid var(--error)' }}>
+            <h2 style={{ color: isPass ? 'var(--primary)' : 'var(--error)', marginBottom: 10, letterSpacing: 2 }}>
+              {isPass ? 'TEST COMPLETED! 🏁' : 'TIME TO RE-BURROW! 🥕'}
+            </h2>
+            <div style={{ fontSize: 64, fontWeight: 800, margin: '20px 0', color: 'var(--text-high)' }}>{results.score}%</div>
+            
+            <p style={{ color: 'var(--text-med)', fontSize: 16, marginBottom: 20 }}>
+              {isPass 
+                ? "Hoppy News! You've jumped through these challenges with grace! 🐾✨" 
+                : "Aww, whiskers! This burrow was a bit deep this time. Let's sharpen our logic teeth and try again! 🐰💪"}
             </p>
-          ) : (
-            <div style={{ textAlign: 'left', marginTop: 20 }}>
-              <div className="card" style={{ background: 'rgba(0,0,0,0.3)', marginBottom: 16, border: '1px solid var(--primary-low)' }}>
-                <div style={{ fontSize: 11, color: 'var(--text-med)', marginBottom: 6, fontWeight: 800 }}>COMPLEXITY ANALYSIS ⚡</div>
-                <div style={{ color: 'var(--primary)', fontSize: 15, fontWeight: 600 }}>{results.complexity}</div>
-              </div>
-              
-              <div style={{ fontSize: 11, color: 'var(--text-med)', marginBottom: 10, fontWeight: 800, textAlign: 'center' }}>TEST CASES PERFORMANCE</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {results.testCases.map((pass, i) => (
-                  <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: 'var(--bg-soft)', borderRadius: 10, border: '1px solid var(--border)' }}>
-                    <span style={{ fontWeight: 600 }}>Test Case {i + 1}</span>
-                    <span style={{ color: pass ? 'var(--success)' : 'var(--error)', fontWeight: 800 }}>{pass ? '✅ PASSED' : '❌ FAILED'}</span>
+            
+            {config.isMCQ ? (
+              <p style={{ color: 'var(--text-med)', fontSize: 14 }}>
+                You got <span style={{ color: isPass ? 'var(--primary)' : 'var(--error)', fontWeight: 800 }}>{results.correct}</span> out of {results.total} questions correct.
+              </p>
+            ) : (
+              <div style={{ textAlign: 'left', marginTop: 20 }}>
+                <div className="card" style={{ background: 'rgba(0,0,0,0.3)', marginBottom: 16, border: isPass ? '1px solid var(--primary-low)' : '1px solid var(--error)' }}>
+                  <div style={{ fontSize: 11, color: 'var(--text-med)', marginBottom: 6, fontWeight: 800 }}>COMPLEXITY ANALYSIS ⚡</div>
+                  <div style={{ color: 'var(--primary)', fontSize: 15, fontWeight: 600 }}>{results.complexity}</div>
+                </div>
+                
+                <div style={{ fontSize: 11, color: 'var(--text-med)', marginBottom: 10, fontWeight: 800, textAlign: 'center' }}>TEST CASES PERFORMANCE</div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {results.testCases.map((pass, i) => (
+                    <div key={i} style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 16px', background: 'var(--bg-soft)', borderRadius: 10, border: '1px solid var(--border)' }}>
+                      <span style={{ fontWeight: 600 }}>Test Case {i + 1}</span>
+                      <span style={{ color: pass ? 'var(--success)' : 'var(--error)', fontWeight: 800 }}>{pass ? '✅ PASSED' : '❌ FAILED'}</span>
+                    </div>
+                  ))}
+                  <div style={{ padding: '10px 16px', background: 'rgba(0,255,136,0.05)', borderRadius: 10, opacity: 0.8, fontSize: 12, textAlign: 'center', color: 'var(--primary)' }}>
+                    ✨ Hidden test cases verified ✨
                   </div>
-                ))}
-                <div style={{ padding: '10px 16px', background: 'rgba(0,255,136,0.05)', borderRadius: 10, opacity: 0.8, fontSize: 12, textAlign: 'center', color: 'var(--primary)' }}>
-                  ✨ Hidden test cases verified ✨
                 </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 40 }}>
-            <button className="btn btn-primary" style={{ width: '100%', padding: 16, fontWeight: 800, letterSpacing: 1 }} onClick={() => setTestState('config')}>
-              TAKE ANOTHER TEST 🚀
-            </button>
-            <button className="btn btn-ghost" style={{ width: '100%', padding: 14, border: '1px solid var(--border)' }} onClick={() => setPage('home')}>
-              GO TO HOME 🏠
-            </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginTop: 40 }}>
+              <button className="btn btn-secondary" style={{ width: '100%', padding: 16, fontWeight: 800 }} onClick={() => { setReviewData({ questions, answers, results, config }); setTestState('review'); }}>
+                👁️ REVIEW RESULTS
+              </button>
+              <button className="btn btn-primary" style={{ width: '100%', padding: 16, fontWeight: 800, letterSpacing: 1 }} onClick={() => setTestState('config')}>
+                TAKE ANOTHER TEST 🚀
+              </button>
+              <button className="btn btn-ghost" style={{ width: '100%', padding: 14, border: '1px solid var(--border)' }} onClick={() => setPage('home')}>
+                GO TO HOME 🏠
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderReview = (data = reviewData) => {
     if (!data) return null;
@@ -558,6 +625,20 @@ export default function TestPage() {
 
   return (
     <div className="page">
+      {/* Resizing Overlay */}
+      {isResizingActive && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 9999,
+          cursor: isResizing.current === 'terminal' ? 'row-resize' : 'col-resize',
+          background: 'transparent'
+        }} />
+      )}
+
       <div className="topbar">
         <div style={{ fontWeight: 800, letterSpacing: 2, display: 'flex', alignItems: 'center', gap: 8, color: 'var(--primary)' }}>
           <span>🤖</span> AI TEST LAB

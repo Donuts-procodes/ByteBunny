@@ -92,6 +92,45 @@ html, body, #root {
 h1, h2, h3 { font-family: var(--font-mono); font-weight: 800; letter-spacing: -0.5px; }
 code { font-family: var(--font-mono); }
 
+/* ── Custom Range Input (Slider) ── */
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  background: transparent;
+  cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 22px;
+  width: 22px;
+  border-radius: 50%;
+  background: var(--primary);
+  margin-top: -8px;
+  box-shadow: 0 0 10px var(--primary-glow);
+  border: 2px solid var(--bg-deep);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+  transform: scale(1.2);
+  box-shadow: 0 0 20px var(--primary);
+}
+
+input[type="range"]:hover::-webkit-slider-runnable-track {
+  border-color: var(--primary-low);
+  background: var(--bg-main);
+}
+
 /* ── Layout Helpers ── */
 .page {
   height: 100vh;

@@ -155,6 +155,7 @@ const handleGooglePopupAuth = async (setLoadingState, addToast, appStoreLoginMet
 export function LoginPage({ onBack, onSignup }) {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -162,6 +163,10 @@ export function LoginPage({ onBack, onSignup }) {
   const addToast = useAppStore((s) => s.addToast);
 
   const handleEmailLogin = async () => {
+    if (!acceptedTerms) {
+      addToast("Please accept Terms & Privacy Policy", "error");
+      return;
+    }
     if (!identifier.trim() || !password) {
       addToast("Fill all fields", "error");
       return;
@@ -186,21 +191,27 @@ export function LoginPage({ onBack, onSignup }) {
           <div className="card" style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%" }}>
             
             <GoogleButton 
-              onClick={() => handleGooglePopupAuth(setGoogleLoading, addToast, login)} 
+              onClick={() => {
+                if (!acceptedTerms) {
+                  addToast("Please accept Terms & Privacy Policy", "error");
+                  return;
+                }
+                handleGooglePopupAuth(setGoogleLoading, addToast, login);
+              }} 
               loading={googleLoading} 
             />
             
             <p style={{ fontSize: 10, color: "var(--text-low)", textAlign: "center", marginTop: -6 }}>
-              💡 Android users: If Google fails, use email & password login below.
+              💡 Android users: If Google fails, use email login below.
             </p>
             
             <Divider />
 
             <div style={fieldWrap}>
-              <label style={labelStyle}>EMAIL, PHONE OR USERNAME</label>
+              <label style={labelStyle}>EMAIL OR USERNAME</label>
               <input 
                 className="input" 
-                placeholder="you@example.com or +91…" 
+                placeholder="you@example.com" 
                 value={identifier} 
                 onChange={(e) => setIdentifier(e.target.value)} 
                 onKeyDown={(e) => e.key === "Enter" && handleEmailLogin()} 
@@ -218,6 +229,19 @@ export function LoginPage({ onBack, onSignup }) {
                 </button>
               </div>
               <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 0' }}>
+              <input 
+                type="checkbox" 
+                id="terms-login" 
+                checked={acceptedTerms} 
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                style={{ cursor: 'pointer', width: 18, height: 18, accentColor: 'var(--primary)' }}
+              />
+              <label htmlFor="terms-login" style={{ fontSize: 12, color: 'var(--text-med)', cursor: 'pointer' }}>
+                I agree to <button onClick={() => useAppStore.getState().setPage('terms')} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'var(--primary)', cursor: 'pointer' }}>Terms</button> & <button onClick={() => useAppStore.getState().setPage('privacy')} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'var(--primary)', cursor: 'pointer' }}>Privacy Policy</button>
+              </label>
             </div>
 
             <button className="btn btn-primary btn-full" onClick={handleEmailLogin} disabled={loading} style={{ marginTop: 2 }}>
@@ -293,7 +317,8 @@ export function ForgotPasswordPage({ onBack }) {
 
 // ── Signup Page ───────────────────────────────────────────────────────────────
 export function SignupPage({ onBack, onLogin }) {
-  const [form, setForm] = useState({ username: "", email: "", phone: "", password: "" });
+  const [form, setForm] = useState({ username: "", email: "", password: "" });
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -304,6 +329,14 @@ export function SignupPage({ onBack, onLogin }) {
   const strength = pwStrength(form.password);
 
   const handleEmailSignup = async () => {
+    if (!acceptedTerms) {
+      addToast("Please accept Terms & Privacy Policy", "error");
+      return;
+    }
+    if (!form.username.trim() || !form.email.trim() || !form.password) {
+      addToast("Fill all fields", "error");
+      return;
+    }
     if (strength < 2) {
       addToast("Password too weak — add uppercase, numbers & symbols", "error");
       return;
@@ -335,7 +368,13 @@ export function SignupPage({ onBack, onLogin }) {
           <div className="card" style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%" }}>
             
             <GoogleButton 
-              onClick={() => handleGooglePopupAuth(setGoogleLoading, addToast, register)} 
+              onClick={() => {
+                if (!acceptedTerms) {
+                  addToast("Please accept Terms & Privacy Policy", "error");
+                  return;
+                }
+                handleGooglePopupAuth(setGoogleLoading, addToast, register);
+              }} 
               loading={googleLoading} 
             />
 
@@ -347,16 +386,9 @@ export function SignupPage({ onBack, onLogin }) {
             </div>
 
             <div style={fieldWrap}>
-              <label style={labelStyle}>EMAIL</label>
+              <label style={labelStyle}>EMAIL *</label>
               <input className="input" type="email" placeholder="you@example.com" value={form.email} onChange={set("email")} />
             </div>
-
-            <div style={fieldWrap}>
-              <label style={labelStyle}>PHONE NUMBER</label>
-              <input className="input" placeholder="+91 98765 43210" value={form.phone} onChange={set("phone")} />
-            </div>
-
-            <p style={{ fontSize: 11, color: "var(--text-low)", marginTop: -6 }}>* Email or phone required</p>
 
             <div style={fieldWrap}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -372,6 +404,19 @@ export function SignupPage({ onBack, onLogin }) {
               <div style={{ display: "flex", flexDirection: "column", gap: 3, marginTop: 8, fontSize: 11 }}>
                 {checks.map(([label, met]) => <span key={label} style={{ color: met ? "var(--primary)" : "var(--text-low)" }}>{met ? "✅" : "⬜"} {label}</span>)}
               </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 0' }}>
+              <input 
+                type="checkbox" 
+                id="terms-signup" 
+                checked={acceptedTerms} 
+                onChange={(e) => setAcceptedTerms(e.target.checked)}
+                style={{ cursor: 'pointer', width: 18, height: 18, accentColor: 'var(--primary)' }}
+              />
+              <label htmlFor="terms-signup" style={{ fontSize: 12, color: 'var(--text-med)', cursor: 'pointer' }}>
+                I agree to <a href="#" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Terms</a> & <a href="#" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Privacy Policy</a>
+              </label>
             </div>
 
             <button className="btn btn-primary btn-full" onClick={handleEmailSignup} disabled={loading} style={{ marginTop: 2 }}>

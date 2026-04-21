@@ -32,6 +32,12 @@ export const BADGE_RULES = [
     check: (stats) => stats.totalLectures >= 10 },
   { id: 'academy_50', label: '50 Lectures', description: 'Complete 50 course lectures', icon: '🎓', 
     check: (stats) => stats.totalLectures >= 50 },
+
+  // Easter Eggs
+  { id: 'egg_67', label: '67', description: 'Burrowed to level 67!', icon: '🥕', 
+    check: (stats) => stats.maxLevel >= 67 },
+  { id: 'egg_69', label: 'Nice', description: 'Reached level 69. Nice.', icon: '😏', 
+    check: (stats) => stats.maxLevel >= 69 },
 ];
 
 /**

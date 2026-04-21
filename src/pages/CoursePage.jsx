@@ -6,7 +6,7 @@ import { SettingsModal, Bunny } from '../components/UI';
 import { getAICodingAssistance, generateCourseTopic, validateCourseCode } from '../lib/ai';
 
 export default function CoursePage() {
-  const { setPage, addToast } = useAppStore();
+  const { setPage, addToast, darkMode } = useAppStore();
   const selection = useAppStore((s) => s.courseSelection);
   
   const lang = selection.lang;
@@ -32,35 +32,50 @@ export default function CoursePage() {
   const [aiWidth, setAiWidth] = useState(260);
   const [terminalHeight, setTerminalHeight] = useState(180);
 
+  const [isResizingActive, setIsResizingActive] = useState(false);
   const isResizing = useRef(null); // 'lesson', 'ai', 'terminal'
+  const gridRef = useRef(null);
+
+  useEffect(() => {
+    if (!isResizingActive) return;
+
+    const handleMouseMoveGlobal = (e) => {
+      if (!isResizing.current || !gridRef.current) return;
+      
+      const gridRect = gridRef.current.getBoundingClientRect();
+
+      if (isResizing.current === 'lesson') {
+        const newWidth = Math.max(150, Math.min(gridRect.width - 400, e.clientX - gridRect.left));
+        setLessonWidth(newWidth);
+      } else if (isResizing.current === 'ai') {
+        const newWidth = Math.max(150, Math.min(gridRect.width - 400, gridRect.right - e.clientX));
+        setAiWidth(newWidth);
+      } else if (isResizing.current === 'terminal') {
+        // Height is distance from container bottom to mouse
+        const newHeight = Math.max(40, Math.min(gridRect.height - 100, gridRect.bottom - e.clientY));
+        setTerminalHeight(newHeight);
+      }
+    };
+
+    const handleMouseUpGlobal = () => {
+      isResizing.current = null;
+      setIsResizingActive(false);
+      document.body.style.cursor = 'default';
+    };
+
+    window.addEventListener('mousemove', handleMouseMoveGlobal);
+    window.addEventListener('mouseup', handleMouseUpGlobal);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMoveGlobal);
+      window.removeEventListener('mouseup', handleMouseUpGlobal);
+    };
+  }, [isResizingActive]);
 
   const startResizing = (direction) => (e) => {
     e.preventDefault();
     isResizing.current = direction;
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', stopResizing);
+    setIsResizingActive(true);
     document.body.style.cursor = direction === 'terminal' ? 'row-resize' : 'col-resize';
-  };
-
-  const stopResizing = () => {
-    isResizing.current = null;
-    document.removeEventListener('mousemove', handleMouseMove);
-    document.removeEventListener('mouseup', stopResizing);
-    document.body.style.cursor = 'default';
-  };
-
-  const handleMouseMove = (e) => {
-    if (!isResizing.current) return;
-    if (isResizing.current === 'lesson') {
-      const newWidth = Math.max(200, Math.min(600, e.clientX));
-      setLessonWidth(newWidth);
-    } else if (isResizing.current === 'ai') {
-      const newWidth = Math.max(200, Math.min(600, window.innerWidth - e.clientX));
-      setAiWidth(newWidth);
-    } else if (isResizing.current === 'terminal') {
-      const newHeight = Math.max(80, Math.min(window.innerHeight * 0.8, window.innerHeight - e.clientY));
-      setTerminalHeight(newHeight);
-    }
   };
 
   // AI Assistant Chat State
@@ -166,17 +181,24 @@ export default function CoursePage() {
     }
   };
 
-  // Keyboard shortcut: Shift+Enter
+  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Shift + Enter to Run Code
       if (e.shiftKey && e.key === 'Enter') {
         e.preventDefault();
         runCode();
       }
+      // Ctrl + Enter to Continue to Next
+      if (e.ctrlKey && e.key === 'Enter' && isSuccess) {
+        e.preventDefault();
+        nextQuestion();
+        if(window.innerWidth < 1024) setActiveTab('code');
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [code, currentQuestion]); // Re-bind when code or question changes
+  }, [code, currentQuestion, isSuccess]); // Re-bind when state changes
 
   const nextQuestion = () => {
     if (currentTopic?.questions && questionIdx < currentTopic.questions.length - 1) {
@@ -201,6 +223,20 @@ export default function CoursePage() {
 
   return (
     <div className="page">
+      {/* Resizing Overlay */}
+      {isResizingActive && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 9999,
+          cursor: isResizing.current === 'terminal' ? 'row-resize' : 'col-resize',
+          background: 'transparent'
+        }} />
+      )}
+
       {/* Topbar */}
       <div className="topbar" style={{ gap: 12, padding: '8px 16px' }}>
         <button 
@@ -232,11 +268,12 @@ export default function CoursePage() {
       {/* Main Resizable Layout */}
       <div className="page-content-full" style={{ paddingBottom: 0, overflow: 'hidden' }}>
         <div 
-          className={`course-grid-resizable active-tab-${activeTab}`} 
+          className="course-grid" 
           style={{ 
             display: 'flex',
-            height: 'calc(100vh - 56px)',
-            background: 'var(--border)'
+            height: 'calc(100vh - 64px)',
+            background: 'var(--border)',
+            gridTemplateColumns: 'none'
           }}
         >
           
@@ -244,7 +281,7 @@ export default function CoursePage() {
           {!lessonCollapsed && (
             <div 
               className={`course-pane lesson-pane ${activeTab === 'lesson' ? 'show-mobile' : 'hide-mobile'}`}
-              style={{ width: lessonWidth, flexShrink: 0, display: 'flex', flexDirection: 'column' }}
+              style={{ width: lessonWidth, flexShrink: 0, overflowY: 'auto' }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
                 <div style={{ fontSize: 10, color: 'var(--primary)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}>
@@ -253,7 +290,7 @@ export default function CoursePage() {
                 <button className="btn-icon-sm hide-mobile" onClick={() => setLessonCollapsed(true)}>«</button>
               </div>
               
-              <div className="curriculum-list" style={{ marginBottom: 24, maxHeight: '30%', overflowY: 'auto' }}>
+              <div className="curriculum-list" style={{ marginBottom: 20, maxHeight: '160px', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 8, padding: 4 }}>
                 {topics.map((t, idx) => (
                   <button 
                     key={t.id}
@@ -277,7 +314,7 @@ export default function CoursePage() {
               </div>
 
               {currentTopic && (
-                <div className="animate-in" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                <div className="animate-in">
                   <div style={{ 
                     padding: 16, 
                     background: 'linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-soft) 100%)', 
@@ -292,7 +329,7 @@ export default function CoursePage() {
                       lineHeight: 1.6, 
                       color: 'var(--text-high)', 
                       fontSize: 13, 
-                      maxHeight: '150px', 
+                      maxHeight: '140px',
                       overflowY: 'auto',
                       paddingRight: 8
                     }} className="scroll-area">
@@ -306,7 +343,8 @@ export default function CoursePage() {
                     borderRadius: 12, 
                     border: '1px solid var(--primary-low)',
                     boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
-                    position: 'relative'
+                    position: 'relative',
+                    marginBottom: 16
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                       <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--primary)', letterSpacing: 1 }}>🎯 TASK {questionIdx + 1}/5</span>
@@ -321,7 +359,7 @@ export default function CoursePage() {
                     <button 
                       className="btn btn-primary" 
                       onClick={() => { nextQuestion(); if(window.innerWidth < 1024) setActiveTab('code'); }}
-                      style={{ width: '100%', marginTop: 16, padding: '12px', fontWeight: 800, letterSpacing: 1 }}
+                      style={{ width: '100%', padding: '12px', fontWeight: 800, letterSpacing: 1 }}
                     >
                       CONTINUE TO NEXT →
                     </button>
@@ -351,7 +389,7 @@ export default function CoursePage() {
                 <MonacoEditor
                   height="100%"
                   language={lang === 'python' ? 'python' : lang === 'javascript' ? 'javascript' : lang === 'typescript' ? 'typescript' : lang === 'cpp' ? 'cpp' : lang === 'csharp' ? 'csharp' : lang === 'rust' ? 'rust' : lang === 'sql' ? 'sql' : 'plaintext'}
-                  theme="vs-dark"
+                  theme={darkMode ? "vs-dark" : "light"}
                   value={code}
                   onChange={(value) => setCode(value || '')}
                   options={{
@@ -371,7 +409,7 @@ export default function CoursePage() {
 
             <div className="terminal-container" style={{ height: activeTab === 'code' ? terminalHeight : '180px' }}>
               <div className="editor-header" style={{ borderBottom: 'none', background: 'rgba(0,0,0,0.3)', height: 28 }}>
-                <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--text-med)' }}>TERMINAL OUTPUT</span>
+                <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--text-med)' }}>⌨️ TERMINAL OUTPUT</span>
               </div>
               <pre className="terminal-body" style={{ color: isSuccess ? 'var(--primary)' : 'var(--text-high)', fontSize: 12 }}>{output}</pre>
             </div>

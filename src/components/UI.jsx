@@ -39,11 +39,31 @@ export function ToastContainer() {
     return type === 'success' ? '🎯 ' : type === 'error' ? '❌ ' : 'ℹ️ ';
   };
 
+  const removeToast = (id) => {
+    useAppStore.setState((s) => ({ toasts: s.toasts.filter(t => t.id !== id) }));
+  };
+
   return (
     <div className="toast-container">
       {toasts.map((t) => (
-        <div key={t.id} className={`toast ${t.type}`}>
-          {getEmoji(t.type, t.msg)}{t.msg}
+        <div key={t.id} className={`toast ${t.type}`} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            {getEmoji(t.type, t.msg)}{t.msg}
+          </div>
+          <button 
+            onClick={() => removeToast(t.id)}
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: 'inherit', 
+              cursor: 'pointer', 
+              fontSize: 14, 
+              opacity: 0.7,
+              padding: '4px'
+            }}
+          >
+            ✕
+          </button>
         </div>
       ))}
     </div>
@@ -227,6 +247,15 @@ export function SettingsModal({ onClose }) {
                 ByteBunny — always watching 👀
               </div>
             </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: '0 4px' }}>
+            <button onClick={() => { onClose(); useAppStore.getState().setPage('terms'); }} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', fontSize: 11, color: 'var(--text-low)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>📜</span> Terms & Conditions
+            </button>
+            <button onClick={() => { onClose(); useAppStore.getState().setPage('privacy'); }} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', fontSize: 11, color: 'var(--text-low)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>🛡️</span> Privacy Policy
+            </button>
           </div>
 
           <button
