@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAppStore } from '../stores/enhanced-appStore';
 import { LANGUAGES, generateLevelsAsync, getLangProgress } from '../data/enhanced-levels';
 import { BottomNav, SettingsModal, ProgressBar } from '../components/UI';
@@ -24,6 +24,13 @@ export default function MapPage() {
 
   const [levels, setLevels]             = useState([]);
   const [levelsReady, setLevelsReady]   = useState(false);
+  const activeNodeRef = useRef(null);
+
+  const lang    = LANGUAGES.find((l) => l.id === activeLang);
+  const lp      = getLangProgress(progress, activeLang);
+  const current = lp.currentLevel;
+  const done    = lp.completedLevels;
+  const pct     = Math.round(Object.keys(done).length / 300 * 100);
 
   useEffect(() => {
     setLevelsReady(false);
@@ -33,11 +40,22 @@ export default function MapPage() {
     });
   }, [activeLang]);
 
-  const lang    = LANGUAGES.find((l) => l.id === activeLang);
-  const lp      = getLangProgress(progress, activeLang);
-  const current = lp.currentLevel;
-  const done    = lp.completedLevels;
-  const pct     = Math.round(Object.keys(done).length / 300 * 100);
+  // Auto-scroll to active node when levels are ready
+  useEffect(() => {
+    if (levelsReady) {
+      // Small delay to ensure DOM is painted
+      const timer = setTimeout(() => {
+        const activeElement = document.getElementById(`level-node-${current}`);
+        if (activeElement) {
+          activeElement.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+          });
+        }
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [levelsReady, current]);
 
   if (!levelsReady) {
     return (
@@ -64,7 +82,7 @@ export default function MapPage() {
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ fontSize: 20 }}>{lang?.icon}</span>
-            <span style={{ fontWeight: 800, fontSize: 16, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lang?.name}</span>
+            <span style={{ fontWeight: 800, fontSize: 16, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{lang?.name} (Lv. {current})</span>
           </div>
           <div style={{ marginTop: 6 }}>
             <ProgressBar value={pct} />
@@ -140,6 +158,7 @@ export default function MapPage() {
             return (
               <div
                 key={lv.id}
+                id={`level-node-${lv.id}`}
                 style={{ 
                   position: 'absolute', 
                   left: `${pos.left}%`, 
@@ -151,6 +170,23 @@ export default function MapPage() {
                   zIndex: 10
                 }}
               >
+                {status === 'active' && (
+                  <div className="animate-bounce" style={{ 
+                    position: 'absolute', 
+                    top: -45, 
+                    background: 'var(--primary)', 
+                    color: 'var(--bg-deep)', 
+                    padding: '4px 10px', 
+                    borderRadius: 20, 
+                    fontSize: 9, 
+                    fontWeight: 900, 
+                    whiteSpace: 'nowrap',
+                    boxShadow: '0 4px 12px var(--primary-glow)',
+                    zIndex: 20
+                  }}>
+                    YOU ARE HERE 📍
+                  </div>
+                )}
                 <div
                   className={`level-node ${status} ${isRecap ? 'recap' : ''}`}
                   onClick={() => status !== 'locked' && startLevel(activeLang, lv.id)}

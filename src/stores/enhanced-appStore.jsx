@@ -55,8 +55,6 @@ export const useAppStore = create(
       setCourseSelection: (sel) => set((s) => ({ 
         courseSelection: { ...s.courseSelection, ...sel } 
       })),
-        courseSelection: { ...s.courseSelection, ...sel } 
-      })),
 
       // ── Test History ─────────────────────────────────────────────────────────────
       addTestResult: (result) => {

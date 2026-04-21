@@ -1,4 +1,4 @@
-# 🐰 ByteBunny v3.0.0
+# 🐰 ByteBunny v3.3.0
 
 > Learn coding languages the fun way — built with **Tauri 2 + Rust + React + Firebase**
 > Now featuring **Advanced AI Integration** for a personalized learning experience!
@@ -7,7 +7,7 @@
 
 ---
 
-## 🚀 What's New in v3.0.0
+## 🚀 What's New in v3.3.0
 
 - **✨ AI Teaching Modules**: Courses are now full teaching modules with AI-generated theory and educational content.
 - **🔍 AI-Driven Validation**: Real-time expert code review in the terminal.

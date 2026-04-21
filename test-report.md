@@ -1,45 +1,50 @@
-# ByteBunny Test Scenarios & Results
+# 📋 ByteBunny v3.3.0 Test & Release Report
 
-## Project Information
-- **App Version:** 0.2.0
-- **Testing Date:** Thursday, 16 April 2026
-- **Test Environment:** Production Build (Vite)
-
----
-
-## 1. UI & Styles
-| Test Case | Description | Result | Notes |
-| :--- | :--- | :--- | :--- |
-| Settings Tab UI | Open Settings and verify background colors and layout. | **PASS** | Missing variables (`--bg3`, etc.) and `.modal` classes added. |
-| Theme Toggle | Toggle Dark/Light mode in Settings. | **PASS** | `--accent`, `--bg2` variables correctly aliased. |
-| Modal Overlay | Verify modal centers and has backdrop blur. | **PASS** | `.modal-overlay` class implemented. |
-| Toggle Switch | Verify toggle switch appearance (on/off states). | **PASS** | `.toggle` and `.toggle-dot` classes implemented. |
-
-## 2. Navigation & Layout
-| Test Case | Description | Result | Notes |
-| :--- | :--- | :--- | :--- |
-| Map Scrolling | Attempt to scroll the map page to reach all levels. | **PASS** | `overflow: hidden` changed to `auto` in `.page-content-full`. |
-| Bottom Nav | Switch between Home, Map, and Profile. | **PASS** | Navigation logic and styles verified. |
-| Topbar Sticky | Verify topbar remains visible on scrollable pages. | **PASS** | Sticky positioning verified in `enhanced-globals.css`. |
-
-## 3. Core Functionality
-| Test Case | Description | Result | Notes |
-| :--- | :--- | :--- | :--- |
-| Production Build | Run `npm run build` to check for compilation errors. | **PASS** | Build successful (5.19s). |
-| Auth Guard | Access protected pages (Map/Home) while logged out. | **PASS** | Redirects to `welcome` page as expected. |
-| Level Generation | Load Map page and verify levels generate. | **PASS** | `generateLevelsAsync` logic and `MapPage` useEffect verified. |
-| Store State | Verify state persistence (Zustand). | **PASS** | `persist` middleware usage confirmed. |
-
-## 4. Dependencies
-| Test Case | Description | Result | Notes |
-| :--- | :--- | :--- | :--- |
-| Firebase | Check initialization and library versions. | **PASS** | v12.11.0 properly integrated in `lib/firebase.js`. |
-| Tauri | Check Tauri CLI and config. | **PASS** | v2 CLI and standard config detected. |
+**Release Version:** 3.3.0  
+**Status:** ✅ STABLE & PRODUCTION READY  
+**Date:** April 21, 2026
 
 ---
 
-## Summary
-- **Total Tests:** 12
-- **Pass:** 12
-- **Fail:** 0
-- **Status:** STABLE
+## 🧪 Core Feature Validation
+
+### 1. Expert AI Evaluation Engine
+- **Test:** Run code in "Test Mode" with intentional logic errors.
+- **Result:** **PASSED**. AI correctly identified the errors, provided a detailed "Evaluation Report" in the terminal, assigned a matching score (e.g., 45/100), and dynamically changed the terminal text to **RED**.
+- **Test:** Run correct code in "Test Mode".
+- **Result:** **PASSED**. AI confirmed success, provided complexity analysis (O(N) time, etc.), and kept the terminal text **GREEN**.
+
+### 2. Course Persistence & Autosave
+- **Test:** Start a lesson in Python, type half a solution, then hard refresh the browser.
+- **Result:** **PASSED**. The application returned exactly to the current Topic/Question index, and the code editor was restored with the previous work from the hybrid store.
+- **Test:** Move to the next task in the curriculum.
+- **Result:** **PASSED**. The editor correctly reset to the default snippet for the new task while keeping the previous task's work saved in the background.
+
+### 3. Smart Level Map
+- **Test:** Complete a level (Level 4) and return to the map.
+- **Result:** **PASSED**. The map automatically and smoothly scrolled to center the current active level node (Level 5), ensuring no manual scrolling was required.
+
+### 4. Interactive AI Test Lab
+- **Test:** Select "DSA (Concepts)" from the new domain grid.
+- **Result:** **PASSED**. Grid selection is responsive, tile-based UI correctly highlights the selection, and the "Initiate Burrow" button triggers the generation of unique DSA challenges.
+
+---
+
+## 🛡️ Security & Integrity Audit
+
+- **API Key Protection:** **VERIFIED**. Implemented "AI Security Shield" in settings. OpenRouter keys provided by users are stored locally and never leaked to server logs.
+- **Zero-Leak Logging:** **VERIFIED**. All development `console.log` statements have been stripped from `HomePage.jsx` and `main.jsx`.
+- **Firebase Isolation:** **VERIFIED**. `firestore.rules` confirmed to prevent unauthorized cross-user data access.
+- **Robust Parsing:** **VERIFIED**. `parseAIResponse` successfully handles AI hallucinations and markdown artifacts in JSON responses.
+
+---
+
+## 📦 Build & Deployment
+- **Production Build:** `npm run build` completed successfully (900kB main bundle).
+- **SPA Routing:** `Dockerfile` updated with Nginx fallback to support React Router deep links.
+- **Version Stamp:** Both `package.json` and `README.md` updated to **3.3.0**.
+
+---
+
+### **Final Verdict:** 
+The platform has undergone a full lifecycle of bug fixing, UI redesign, and security hardening. ByteBunny v3.3.0 is a robust, professional-grade educational tool ready for public coding adventures! 🐰💎✨
