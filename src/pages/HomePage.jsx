@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAppStore } from '../stores/enhanced-appStore';
 import { LANGUAGES, calcLangPercent } from '../data/enhanced-levels';
 import { Bunny, BottomNav, ProgressBar, SettingsModal } from '../components/UI';
+import { generateAITip } from '../lib/ai';
 
 export default function HomePage() {
   const user          = useAppStore((s) => s.user);
@@ -11,6 +12,24 @@ export default function HomePage() {
   const goToMap       = useAppStore((s) => s.goToMap);
   const continueLearning = useAppStore((s) => s.continueLearning);
   const [showSettings, setShowSettings] = useState(false);
+  const [tip, setTip] = useState(null);
+  const [tipLoading, setTipLoading] = useState(false);
+
+  useEffect(() => {
+    handleGetTip();
+  }, []);
+
+  const handleGetTip = async () => {
+    setTipLoading(true);
+    try {
+      const newTip = await generateAITip();
+      setTip(newTip);
+    } catch (err) {
+      console.error("Failed to generate tip:", err);
+    } finally {
+      setTipLoading(false);
+    }
+  };
 
   const lastLang = Object.keys(progress)[0];
   const lastLangData = lastLang ? LANGUAGES.find((l) => l.id === lastLang) : null;
@@ -42,7 +61,7 @@ export default function HomePage() {
 
       <div className="page-content scroll-area">
         {/* Streak Card */}
-        <div className="card animate-in" style={{ marginBottom: 32, position: 'relative', overflow: 'hidden', borderLeft: '4px solid var(--primary)' }}>
+        <div className="card animate-in" style={{ marginBottom: 20, position: 'relative', overflow: 'hidden', borderLeft: '4px solid var(--primary)' }}>
           <div style={{ position: 'absolute', top: -20, right: -20, fontSize: 120, opacity: 0.03, transform: 'rotate(15deg)', pointerEvents: 'none' }}>🐰</div>
           <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
             <Bunny size={64} mood={streak > 0 ? 'excited' : 'happy'} animate={streak > 0} />
@@ -54,6 +73,23 @@ export default function HomePage() {
                  "You're a coding machine! Don't stop now."}
               </p>
             </div>
+          </div>
+        </div>
+
+        {/* AI Tip Section */}
+        <div className="animate-in" style={{ animationDelay: '0.05s', marginBottom: 32 }}>
+          <div className="card" style={{ background: 'var(--primary-low)', border: '1px dashed var(--primary)', padding: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: (tip || tipLoading) ? 12 : 0 }}>
+              <span style={{ fontSize: 18 }}>💡</span>
+              <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: 1 }}>ByteBunny AI Tip</span>
+            </div>
+            {tipLoading ? (
+              <div className="pulse-text" style={{ fontSize: 11, color: 'var(--primary)', fontWeight: 700 }}>BURROWING FOR TIPS... 🐰🔍</div>
+            ) : tip && (
+              <div style={{ fontSize: 13, lineHeight: 1.5, color: 'var(--text-high)', fontStyle: 'italic', animation: 'fadeIn 0.3s ease-out' }}>
+                {tip.replace(/^["']|["']$/g, '')}
+              </div>
+            )}
           </div>
         </div>
 

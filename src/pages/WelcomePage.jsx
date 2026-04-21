@@ -18,8 +18,8 @@ export default function WelcomePage({ onLogin, onSignup }) {
             <div style={{ fontSize: 46, fontWeight: 800, letterSpacing: '-2px', lineHeight: 1 }}>
               Byte<span style={{ color: 'var(--accent)' }}>Bunny</span>
             </div>
-            <div style={{ color: 'var(--text2)', marginTop: 8, fontSize: 13, letterSpacing: 1 }}>
-              // LEARN CODING THE FUN WAY
+            <div style={{ color: 'var(--text2)', marginTop: 12, fontSize: 13, letterSpacing: 2, display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', fontWeight: 700 }}>
+              <span>✨</span> LEARN CODING THE FUN WAY <span>✨</span>
             </div>
           </div>
 

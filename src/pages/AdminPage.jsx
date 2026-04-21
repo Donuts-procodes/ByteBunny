@@ -125,8 +125,10 @@ export default function AdminPage() {
       {/* Header */}
       <div style={{ background: 'var(--bg2)', borderBottom: '1px solid var(--border)', padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
         <button className="btn btn-ghost btn-sm" onClick={() => setPage('home')}>←</button>
-        <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--accent)' }}>// ADMIN PANEL</div>
-        <span className="badge badge-orange" style={{ marginLeft: 'auto' }}>🔑 {user.username}</span>
+        <div style={{ fontWeight: 800, fontSize: 16, color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span>🔑</span> ADMIN PANEL
+        </div>
+        <span className="badge badge-orange" style={{ marginLeft: 'auto' }}>{user.username}</span>
       </div>
 
       {/* Tabs */}

@@ -30,6 +30,8 @@ export const useAppStore = create(
       // Progress
       progress:  {},
       courseProgress: {}, // { python: { basic: [lectureId1, lectureId2], ... } }
+      testHistory: [], // [ { id, date, config, questions, answers, results } ]
+      badges: [], // [badgeId1, badgeId2, ...]
       xp:        0,
       streak:    0,
       lastLogin: '',
@@ -49,6 +51,23 @@ export const useAppStore = create(
       setPage:       (page) => set({ page }),
       setActiveLang: (lang) => set({ activeLang: lang }),
       setCourseSelection: (sel) => set({ courseSelection: sel }),
+
+      // ── Test History ─────────────────────────────────────────────────────────────
+      addTestResult: (result) => {
+        const { testHistory, user, xp } = get();
+        const updatedHistory = [result, ...testHistory];
+        const xpEarned = Math.floor(result.results.score / 2); // 50 XP for 100% score
+
+        set({ 
+          testHistory: updatedHistory,
+          xp: xp + xpEarned
+        });
+
+        if (user?.uid) {
+          pushToFirestore(user.uid, get()._snap());
+        }
+        get().addToast(`Test Saved! +${xpEarned} XP 🏆`, 'success');
+      },
 
       // ── Course Progress ──────────────────────────────────────────────────────────
       completeCourseLecture: (lang, level, lectureId, earnedXP = 10) => {
@@ -86,6 +105,14 @@ export const useAppStore = create(
         setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), dur); 
       },
 
+      saveBadges: (badgeIds) => {
+        const { user } = get();
+        set({ badges: badgeIds });
+        if (user?.uid) {
+          pushToFirestore(user.uid, get()._snap());
+        }
+      },
+
       _snap: () => {
         const s = get();
         return {
@@ -97,6 +124,8 @@ export const useAppStore = create(
           lastLogin: s.lastLogin,
           progress:  s.progress,
           courseProgress: s.courseProgress,
+          testHistory: s.testHistory,
+          badges:    s.badges,
           darkMode:  s.darkMode,
         };
       },
@@ -111,6 +140,7 @@ export const useAppStore = create(
             streak:   Math.max(local.streak, remote.streak || 0),
             progress: mergeProgress(local.progress, remote.progress || {}),
             courseProgress: remote.courseProgress || local.courseProgress || {},
+            testHistory: remote.testHistory || local.testHistory || [],
             darkMode: remote.darkMode ?? local.darkMode,
           }));
         });
@@ -123,10 +153,11 @@ export const useAppStore = create(
             const isAdmin = ADMIN_UIDS.includes(fbUser.uid);
             const remote  = await fetchFromFirestore(fbUser.uid);
             const today   = new Date().toDateString();
-            const { progress, courseProgress, xp, streak, lastLogin, darkMode } = get();
+            const { progress, courseProgress, testHistory, xp, streak, lastLogin, darkMode } = get();
 
             const mergedProgress = mergeProgress(progress, remote?.progress || {});
             const mergedCourseProgress = { ...courseProgress, ...(remote?.courseProgress || {}) };
+            const mergedTestHistory = remote?.testHistory || testHistory || [];
             const remoteStreak   = remote?.streak    || 0;
             const remoteXP       = remote?.xp        || 0;
             const prevLoginStr   = remote?.lastLogin || lastLogin;
@@ -168,6 +199,7 @@ export const useAppStore = create(
               page:         'home',
               progress:     mergedProgress,
               courseProgress: mergedCourseProgress,
+              testHistory:  mergedTestHistory,
               xp:           Math.max(remoteXP, xp),
               streak:       newStreak,
               lastLogin:    today,
@@ -183,6 +215,7 @@ export const useAppStore = create(
               lastLogin: today,
               progress:  mergedProgress,
               courseProgress: mergedCourseProgress,
+              testHistory:  mergedTestHistory,
               darkMode:  remote?.darkMode ?? darkMode,
             });
 
@@ -210,6 +243,7 @@ export const useAppStore = create(
             streak:    0,
             lastLogin: new Date().toDateString(),
             progress:  {},
+            testHistory: [],
             darkMode:  get().darkMode,
           });
           addToast('🐰 Account created! Welcome!', 'success');
@@ -246,7 +280,7 @@ export const useAppStore = create(
         await firebaseLogout();
         set({
           user: null, firebaseUser: null, page: 'welcome',
-          progress: {}, xp: 0, streak: 0, activeLang: null,
+          progress: {}, courseProgress: {}, testHistory: [], xp: 0, streak: 0, activeLang: null,
           currentLevelId: null, _firestoreUnsub: null,
         });
         addToast('👋 See you next time!', 'info');
@@ -346,23 +380,20 @@ export const useAppStore = create(
       },
 
       goToMap: (langId) => set({ activeLang: langId, page: 'map' }),
+
+      reviewTest: (testData) => {
+        set({ page: 'test' });
+        // We'll need a way to pass this data to TestPage. 
+        // Let's use a temporary state in the store.
+        set({ pendingReview: testData });
+      },
     }),
     {
       name: 'bytebunny-store',
-      version: 2,
+      version: 3,
       migrate: (persistedState, version) => {
-        if (version === 1) {
-          const migratedProgress = {};
-          Object.entries(persistedState.progress || {}).forEach(([langId, langData]) => {
-            migratedProgress[langId] = {
-              ...langData,
-              totalXP: calculateTotalXP(langId, langData),
-              levelsCompleted: calculateCompletedLevels(langId, langData),
-              totalAttempts: calculateTotalAttempts(langId, langData),
-              lastPlayedAt: new Date().toISOString(),
-            };
-          });
-          return { ...persistedState, progress: migratedProgress };
+        if (version < 3) {
+          return { ...persistedState, testHistory: [] };
         }
         return persistedState;
       },

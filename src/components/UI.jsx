@@ -32,11 +32,18 @@ export function Bunny({
 // ── Toast Container ───────────────────────────────────────────────────────────
 export function ToastContainer() {
   const toasts = useAppStore((s) => s.toasts);
+  
+  const getEmoji = (type, msg) => {
+    // If message already starts with an emoji, don't prepend one
+    if (/^[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}]/u.test(msg)) return '';
+    return type === 'success' ? '🎯 ' : type === 'error' ? '❌ ' : 'ℹ️ ';
+  };
+
   return (
     <div className="toast-container">
       {toasts.map((t) => (
         <div key={t.id} className={`toast ${t.type}`}>
-          {t.type === 'success' ? '🎯' : t.type === 'error' ? '❌' : 'ℹ️'} {t.msg}
+          {getEmoji(t.type, t.msg)}{t.msg}
         </div>
       ))}
     </div>
@@ -97,6 +104,7 @@ export function BottomNav() {
   const items = [
     { id: "home", icon: "🏠", label: "Home" },
     { id: "course-menu", icon: "📚", label: "Course" },
+    { id: "test", icon: "📝", label: "Test" },
     { id: "profile", icon: "🐰", label: "Profile" },
   ];
   return (

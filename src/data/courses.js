@@ -931,6 +931,147 @@ export const COURSE_DATA = {
         { qId: 'h10q5', text: 'Events using event keyword', defaultCode: '', expectedPattern: /event\s*Action/ }
       ]}
     ]
+  },
+  dsa: {
+    basic: [
+      { id: 'd1', title: 'Complexity', theory: 'Big-O notation measures time and space efficiency relative to input size N.', questions: [
+        { qId: 'd1q1', text: 'Constant time notation', defaultCode: '', expectedPattern: /O\(1\)/ },
+        { qId: 'd1q2', text: 'Linear time notation', defaultCode: '', expectedPattern: /O\(n\)/ },
+        { qId: 'd1q3', text: 'Quadratic time notation', defaultCode: '', expectedPattern: /O\(n\^2\)/ },
+        { qId: 'd1q4', text: 'Logarithmic time notation', defaultCode: '', expectedPattern: /O\(log\s*n\)/ },
+        { qId: 'd1q5', text: 'Linearithmic time notation', defaultCode: '', expectedPattern: /O\(n\s*log\s*n\)/ }
+      ]},
+      { id: 'd2', title: 'Arrays & Strings', theory: 'Linear structures storing elements contiguously in memory.', questions: [
+        { qId: 'd2q1', text: 'Access element at index i', defaultCode: '', expectedPattern: /arr\[i\]/ },
+        { qId: 'd2q2', text: 'String length operation', defaultCode: '', expectedPattern: /\.length|len\(|sizeof/ },
+        { qId: 'd2q3', text: 'Initialize empty array', defaultCode: '', expectedPattern: /\[\]|\{\}|new/ },
+        { qId: 'd2q4', text: 'Check if string is empty', defaultCode: '', expectedPattern: /==\s*["']["']|\.isEmpty/ },
+        { qId: 'd2q5', text: 'Reverse a string logic', defaultCode: '', expectedPattern: /reverse|swap/ }
+      ]},
+      { id: 'd3', title: 'Linear Search', theory: 'Checking every element sequentially until found.', questions: [
+        { qId: 'd3q1', text: 'Start loop 0 to N', defaultCode: '', expectedPattern: /for.*i\s*<\s*n/ },
+        { qId: 'd3q2', text: 'Check if element == target', defaultCode: '', expectedPattern: /==\s*target/ },
+        { qId: 'd3q3', text: 'Return index if found', defaultCode: '', expectedPattern: /return\s*i/ },
+        { qId: 'd3q4', text: 'Return -1 if not found', defaultCode: '', expectedPattern: /return\s*-1/ },
+        { qId: 'd3q5', text: 'Linear search complexity', defaultCode: '', expectedPattern: /O\(n\)/ }
+      ]},
+      { id: 'd4', title: 'Selection Sort', theory: 'Simple sorting by repeatedly finding the minimum element.', questions: [
+        { qId: 'd4q1', text: 'Nested loop structure', defaultCode: '', expectedPattern: /for.*for/ },
+        { qId: 'd4q2', text: 'Find min_idx', defaultCode: '', expectedPattern: /min_idx\s*=/ },
+        { qId: 'd4q3', text: 'Swap elements', defaultCode: '', expectedPattern: /swap|temp\s*=/ },
+        { qId: 'd4q4', text: 'Average complexity', defaultCode: '', expectedPattern: /O\(n\^2\)/ },
+        { qId: 'd4q5', text: 'Is it stable?', defaultCode: '', expectedPattern: /no|false/i }
+      ]},
+      { id: 'd5', title: 'Recursion', theory: 'A function calling itself with a base case to stop.', questions: [
+        { qId: 'd5q1', text: 'Define base case if n == 0', defaultCode: '', expectedPattern: /if\s*\(?n\s*==\s*0\)?/ },
+        { qId: 'd5q2', text: 'Return base value', defaultCode: '', expectedPattern: /return\s*[01]/ },
+        { qId: 'd5q3', text: 'Recursive call with n-1', defaultCode: '', expectedPattern: /\w+\(n\s*-\s*1\)/ },
+        { qId: 'd5q4', text: 'Factorial logic n * f(n-1)', defaultCode: '', expectedPattern: /n\s*\*\s*\w+/ },
+        { qId: 'd5q5', text: 'Stack overflow cause', defaultCode: '', expectedPattern: /base\s*case/i }
+      ]}
+    ],
+    intermediate: [
+      { id: 'd6', title: 'Linked Lists', theory: 'Nodes containing data and pointers to next nodes.', questions: [
+        { qId: 'd6q1', text: 'Node structure (val, next)', defaultCode: '', expectedPattern: /val|next/ },
+        { qId: 'd6q2', text: 'Traverse list while node != null', defaultCode: '', expectedPattern: /while.*!=\s*null/ },
+        { qId: 'd6q3', text: 'Move to next: curr = curr.next', defaultCode: '', expectedPattern: /curr\.next/ },
+        { qId: 'd6q4', text: 'Insertion at head', defaultCode: '', expectedPattern: /next\s*=\s*head/ },
+        { qId: 'd6q5', text: 'Doubly linked list (prev)', defaultCode: '', expectedPattern: /prev/ }
+      ]},
+      { id: 'd7', title: 'Stacks & Queues', theory: 'LIFO (Stack) and FIFO (Queue) linear structures.', questions: [
+        { qId: 'd7q1', text: 'Stack push operation', defaultCode: '', expectedPattern: /push/ },
+        { qId: 'd7q2', text: 'Stack pop operation', defaultCode: '', expectedPattern: /pop/ },
+        { qId: 'd7q3', text: 'Queue enqueue/offer', defaultCode: '', expectedPattern: /enqueue|offer|add/ },
+        { qId: 'd7q4', text: 'Queue dequeue/poll', defaultCode: '', expectedPattern: /dequeue|poll|remove/ },
+        { qId: 'd7q5', text: 'Peek top element', defaultCode: '', expectedPattern: /peek/ }
+      ]},
+      { id: 'd8', title: 'Hash Tables', theory: 'Mapping keys to values using a hash function for O(1) average access.', questions: [
+        { qId: 'd8q1', text: 'Set key-value pair', defaultCode: '', expectedPattern: /put|set|\[.*\]\s*=/ },
+        { qId: 'd8q2', text: 'Get value by key', defaultCode: '', expectedPattern: /get|\[.*\]/ },
+        { qId: 'd8q3', text: 'Check if key exists', defaultCode: '', expectedPattern: /contains|has/ },
+        { qId: 'd8q4', text: 'Collision resolution', defaultCode: '', expectedPattern: /chaining|probing/i },
+        { qId: 'd8q5', text: 'Remove key', defaultCode: '', expectedPattern: /remove|delete/ }
+      ]},
+      { id: 'd9', title: 'Binary Search', theory: 'Efficient search in O(log N) for sorted arrays.', questions: [
+        { qId: 'd9q1', text: 'Calculate mid index', defaultCode: '', expectedPattern: /left\s*\+\s*\(right\s*-\s*left\)\s*\/\s*2/ },
+        { qId: 'd9q2', text: 'If target < mid, move right', defaultCode: '', expectedPattern: /right\s*=\s*mid\s*-\s*1/ },
+        { qId: 'd9q3', text: 'If target > mid, move left', defaultCode: '', expectedPattern: /left\s*=\s*mid\s*\+\s*1/ },
+        { qId: 'd9q4', text: 'Loop condition left <= right', defaultCode: '', expectedPattern: /left\s*<=\s*right/ },
+        { qId: 'd9q5', text: 'Search space reduction', defaultCode: '', expectedPattern: /half|50%/i }
+      ]},
+      { id: 'd10', title: 'Fast Sorting', theory: 'Merge Sort and Quick Sort use Divide and Conquer.', questions: [
+        { qId: 'd10q1', text: 'Merge sort split logic', defaultCode: '', expectedPattern: /mid\s*=\s*n\s*\/\s*2/ },
+        { qId: 'd10q2', text: 'Quick sort pivot selection', defaultCode: '', expectedPattern: /pivot\s*=/ },
+        { qId: 'd10q3', text: 'Average complexity of both', defaultCode: '', expectedPattern: /O\(n\s*log\s*n\)/ },
+        { qId: 'd10q4', text: 'Which is stable?', defaultCode: '', expectedPattern: /merge/i },
+        { qId: 'd10q5', text: 'Quick sort partition', defaultCode: '', expectedPattern: /partition/ }
+      ]},
+      { id: 'd11', title: 'Bit Magic', theory: 'Manipulating individual bits for performance.', questions: [
+        { qId: 'd11q1', text: 'AND operator', defaultCode: '', expectedPattern: /&/ },
+        { qId: 'd11q2', text: 'OR operator', defaultCode: '', expectedPattern: /\|/ },
+        { qId: 'd11q3', text: 'XOR operator', defaultCode: '', expectedPattern: /\^/ },
+        { qId: 'd11q4', text: 'Left shift (multiply by 2)', defaultCode: '', expectedPattern: /<</ },
+        { qId: 'd11q5', text: 'Right shift (divide by 2)', defaultCode: '', expectedPattern: />>/ }
+      ]},
+      { id: 'd12', title: 'Sliding Window', theory: 'Maintaining a window over an array to solve sub-array problems.', questions: [
+        { qId: 'd12q1', text: 'Expand window (right++)', defaultCode: '', expectedPattern: /right\+\+/ },
+        { qId: 'd12q2', text: 'Shrink window condition', defaultCode: '', expectedPattern: /while.*left\+\+/ },
+        { qId: 'd12q3', text: 'Calculate window size', defaultCode: '', expectedPattern: /right\s*-\s*left\s*\+\s*1/ },
+        { qId: 'd12q4', text: 'Two pointers initialization', defaultCode: '', expectedPattern: /left\s*=\s*0.*right\s*=\s*0/ },
+        { qId: 'd12q5', text: 'Typical complexity', defaultCode: '', expectedPattern: /O\(n\)/ }
+      ]}
+    ],
+    expert: [
+      { id: 'd13', title: 'Trees & BST', theory: 'Hierarchical structures with nodes. BST: Left < Root < Right.', questions: [
+        { qId: 'd13q1', text: 'In-order traversal', defaultCode: '', expectedPattern: /left.*root.*right/i },
+        { qId: 'd13q2', text: 'Pre-order traversal', defaultCode: '', expectedPattern: /root.*left.*right/i },
+        { qId: 'd13q3', text: 'Post-order traversal', defaultCode: '', expectedPattern: /left.*right.*root/i },
+        { qId: 'd13q4', text: 'BST insert logic', defaultCode: '', expectedPattern: /<\s*root.*>\s*root/ },
+        { qId: 'd13q5', text: 'Balanced tree examples', defaultCode: '', expectedPattern: /avl|red-black/i }
+      ]},
+      { id: 'd14', title: 'Heaps & Graphs', theory: 'Heaps for priorities. Graphs for networks and relations.', questions: [
+        { qId: 'd14q1', text: 'Min-heap root property', defaultCode: '', expectedPattern: /smallest|minimum/i },
+        { qId: 'd14q2', text: 'Adjacency list representation', defaultCode: '', expectedPattern: /Map<.*List>|vector<vector>/i },
+        { qId: 'd14q3', text: 'Adjacency matrix size', defaultCode: '', expectedPattern: /n\^2|v\^2/ },
+        { qId: 'd14q4', text: 'Priority Queue push complexity', defaultCode: '', expectedPattern: /O\(log\s*n\)/ },
+        { qId: 'd14q5', text: 'Graph edge notation (u, v)', defaultCode: '', expectedPattern: /u,\s*v/ }
+      ]},
+      { id: 'd15', title: 'Backtracking', theory: 'Exploring all possibilities and pruning invalid paths.', questions: [
+        { qId: 'd15q1', text: 'Base case to record solution', defaultCode: '', expectedPattern: /if.*res\.add/ },
+        { qId: 'd15q2', text: 'Recursive step', defaultCode: '', expectedPattern: /dfs\(.*\)|solve\(.*\)/ },
+        { qId: 'd15q3', text: 'Undo step (backtrack)', defaultCode: '', expectedPattern: /remove|pop|unvisited/i },
+        { qId: 'd15q4', text: 'N-Queens example', defaultCode: '', expectedPattern: /queen/i },
+        { qId: 'd15q5', text: 'Complexity of permutations', defaultCode: '', expectedPattern: /O\(n!\)/ }
+      ]},
+      { id: 'd16', title: 'Dynamic Prog', theory: 'Solving sub-problems once and storing results (memoization).', questions: [
+        { qId: 'd16q1', text: 'Memoization table check', defaultCode: '', expectedPattern: /if.*memo\[i\]\s*!=\s*-1/ },
+        { qId: 'd16q2', text: 'Tabulation (Bottom-up) loop', defaultCode: '', expectedPattern: /dp\[i\]\s*=\s*/ },
+        { qId: 'd16q3', text: 'Optimal substructure', defaultCode: '', expectedPattern: /max\(|min\(/ },
+        { qId: 'd16q4', text: 'Knapsack 0/1 logic', defaultCode: '', expectedPattern: /weight/i },
+        { qId: 'd16q5', text: 'Fibonacci DP complexity', defaultCode: '', expectedPattern: /O\(n\)/ }
+      ]},
+      { id: 'd17', title: 'Advanced Graphs', theory: 'Shortest paths and spanning trees.', questions: [
+        { qId: 'd17q1', text: 'Dijkstra complexity', defaultCode: '', expectedPattern: /e\s*log\s*v/i },
+        { qId: 'd17q2', text: 'MST algorithm examples', defaultCode: '', expectedPattern: /prim|kruskal/i },
+        { qId: 'd17q3', text: 'Topological sort (indegree)', defaultCode: '', expectedPattern: /indegree|in-degree/i },
+        { qId: 'd17q4', text: 'Bellman-Ford for negative edges', defaultPattern: /negative/i },
+        { qId: 'd17q5', text: 'Floyd-Warshall all-pairs', defaultCode: '', expectedPattern: /O\(v\^3\)/ }
+      ]},
+      { id: 'd18', title: 'Tries & DSU', theory: 'Specialized structures for strings and sets.', questions: [
+        { qId: 'd18q1', text: 'Trie node children', defaultCode: '', expectedPattern: /children|alphabet/i },
+        { qId: 'd18q2', text: 'DSU find operation', defaultCode: '', expectedPattern: /find\(i\)/ },
+        { qId: 'd18q3', text: 'DSU union by rank', defaultCode: '', expectedPattern: /union/i },
+        { qId: 'd18q4', text: 'DSU path compression', defaultCode: '', expectedPattern: /parent\[i\]\s*=\s*find/ },
+        { qId: 'd18q5', text: 'Trie search complexity', defaultCode: '', expectedPattern: /O\(L\)/ }
+      ]},
+      { id: 'd19', title: 'Segment Trees', theory: 'Efficient range queries and updates.', questions: [
+        { qId: 'd19q1', text: 'Build complexity', defaultCode: '', expectedPattern: /O\(n\)/ },
+        { qId: 'd19q2', text: 'Query complexity', defaultCode: '', expectedPattern: /O\(log\s*n\)/ },
+        { qId: 'd19q3', text: 'Tree array size', defaultCode: '', expectedPattern: /4\s*\*?\s*n/ },
+        { qId: 'd19q4', text: 'Merge logic (sum/min/max)', defaultCode: '', expectedPattern: /left\s*\+\s*right/ },
+        { qId: 'd19q5', text: 'Fenwick tree name', defaultCode: '', expectedPattern: /binary\s*indexed\s*tree/i }
+      ]}
+    ]
   }
 };
 
@@ -945,5 +1086,6 @@ export const LANGUAGES = [
   { id: 'typescript', label: 'TypeScript', icon: '📘' },
   { id: 'cpp', label: 'C++', icon: '⚙️' },
   { id: 'java', label: 'Java', icon: '☕' },
-  { id: 'csharp', label: 'C#', icon: '🎮' }
+  { id: 'csharp', label: 'C#', icon: '🎮' },
+  { id: 'dsa', label: 'DSA', icon: '🧩' }
 ];

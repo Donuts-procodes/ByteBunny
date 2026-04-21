@@ -11,6 +11,7 @@ import {
   setPersistence,
   browserLocalPersistence,
   signInWithCredential,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 import {
   getFirestore,
@@ -48,6 +49,8 @@ export function mergeProgress(local = {}, remote = {}) {
   const merged = {};
   const langs  = new Set([...Object.keys(local), ...Object.keys(remote)]);
   for (const lang of langs) {
+    if (lang === 'testHistory') continue; // Skip non-lang fields if they leak here
+    
     const l = local[lang]  || { currentLevel: 1, completedLevels: {} };
     const r = remote[lang] || { currentLevel: 1, completedLevels: {} };
     const levels = {};
@@ -59,6 +62,8 @@ export function mergeProgress(local = {}, remote = {}) {
       levels[id] = Math.max(l.completedLevels?.[id] || 0, r.completedLevels?.[id] || 0);
     }
     merged[lang] = {
+      ...r,
+      ...l,
       currentLevel:    Math.max(l.currentLevel || 1, r.currentLevel || 1),
       completedLevels: levels,
     };
@@ -76,6 +81,8 @@ export async function pushToFirestore(uid, snapshot) {
       streak:    snapshot.streak,
       lastLogin: snapshot.lastLogin,
       progress:  snapshot.progress,
+      courseProgress: snapshot.courseProgress || {},
+      testHistory: snapshot.testHistory || [],
       darkMode:  snapshot.darkMode,
       updatedAt: serverTimestamp(),
     }, { merge: true });
@@ -148,6 +155,10 @@ export async function loginWithToken(idToken) {
 
 export async function firebaseLogout() {
   await signOut(auth);
+}
+
+export async function firebaseResetPassword(email) {
+  await sendPasswordResetEmail(auth, email);
 }
 
 export function listenAuthState(onChange) {

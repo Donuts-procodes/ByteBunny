@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import MonacoEditor from '@monaco-editor/react';
 import { useAppStore } from '../stores/enhanced-appStore';
 import { COURSE_DATA, LANGUAGES, DIFFICULTY_LEVELS } from '../data/courses';
 import { SettingsModal, Bunny } from '../components/UI';
+import { getAICodingAssistance, generateCourseTopic, validateCourseCode } from '../lib/ai';
 
 export default function CoursePage() {
-  const setPage = useAppStore((s) => s.setPage);
+  const { setPage, addToast } = useAppStore();
   const selection = useAppStore((s) => s.courseSelection);
   
   const lang = selection.lang;
@@ -18,7 +19,103 @@ export default function CoursePage() {
   const [showSettings, setShowSettings] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const topics = COURSE_DATA[lang]?.[level] || [];
+  // Curriculum Expansion State
+  const [bonusTopics, setBonusTopics] = useState([]);
+  const [isGeneratingTopic, setIsGeneratingTopic] = useState(false);
+
+  // Layout & Resizing State
+  const [activeTab, setActiveTab] = useState('code'); 
+  const [lessonCollapsed, setLessonCollapsed] = useState(false);
+  const [aiCollapsed, setAiCollapsed] = useState(false);
+  
+  const [lessonWidth, setLessonWidth] = useState(280);
+  const [aiWidth, setAiWidth] = useState(260);
+  const [terminalHeight, setTerminalHeight] = useState(180);
+
+  const isResizing = useRef(null); // 'lesson', 'ai', 'terminal'
+
+  const startResizing = (direction) => (e) => {
+    e.preventDefault();
+    isResizing.current = direction;
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', stopResizing);
+    document.body.style.cursor = direction === 'terminal' ? 'row-resize' : 'col-resize';
+  };
+
+  const stopResizing = () => {
+    isResizing.current = null;
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', stopResizing);
+    document.body.style.cursor = 'default';
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isResizing.current) return;
+    if (isResizing.current === 'lesson') {
+      const newWidth = Math.max(200, Math.min(600, e.clientX));
+      setLessonWidth(newWidth);
+    } else if (isResizing.current === 'ai') {
+      const newWidth = Math.max(200, Math.min(600, window.innerWidth - e.clientX));
+      setAiWidth(newWidth);
+    } else if (isResizing.current === 'terminal') {
+      const newHeight = Math.max(80, Math.min(window.innerHeight * 0.8, window.innerHeight - e.clientY));
+      setTerminalHeight(newHeight);
+    }
+  };
+
+  // AI Assistant Chat State
+  const [messages, setMessages] = useState([
+    { role: 'assistant', content: "Hello! I'm your AI coding buddy. Need help with this task? Just ask!" }
+  ]);
+  const [prompt, setPrompt] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+
+  const handleSendMessage = async () => {
+    if (!prompt.trim() || isTyping) return;
+
+    const userMsg = { role: 'user', content: prompt };
+    const currentMessages = [...messages, userMsg];
+    setMessages(currentMessages);
+    setPrompt('');
+    setIsTyping(true);
+
+    try {
+      const context = {
+        lang,
+        topic: currentTopic?.title,
+        question: currentQuestion?.text,
+        code
+      };
+      
+      const aiResponse = await getAICodingAssistance(context, currentMessages);
+      setMessages(prev => [...prev, { role: 'assistant', content: aiResponse }]);
+    } catch (err) {
+      console.error(err);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I'm having trouble connecting to my brain right now. 🐰🔌" }]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const handleGenerateBonus = async () => {
+    if (isGeneratingTopic) return;
+    setIsGeneratingTopic(true);
+    addToast("Burrowing for new lessons... 🐰🥕", "info");
+    
+    try {
+      const existingTitles = [...topics.map(t => t.title), ...bonusTopics.map(t => t.title)];
+      const newTopic = await generateCourseTopic(lang, level, existingTitles);
+      setBonusTopics(prev => [...prev, newTopic]);
+      addToast("Hoppy News! New bonus topic added! ✨", "success");
+    } catch (err) {
+      addToast("Failed to generate topic. Try again!", "error");
+    } finally {
+      setIsGeneratingTopic(false);
+    }
+  };
+
+  const baseTopics = COURSE_DATA[lang]?.[level] || [];
+  const topics = [...baseTopics, ...bonusTopics];
   const currentTopic = topics[topicIdx];
   const currentQuestion = currentTopic?.questions[questionIdx];
 
@@ -30,26 +127,43 @@ export default function CoursePage() {
     }
   }, [lang, level, topicIdx, questionIdx]);
 
-  const runCode = () => {
+  const runCode = async () => {
     if (!currentQuestion) return;
 
     // Refresh output immediately
-    setOutput("[Running...]");
+    setOutput("[Running...]\n> Checking your code with ByteBunny AI... 🐰🔍");
     setIsSuccess(false);
 
-    // Small delay to simulate execution
-    setTimeout(() => {
+    try {
+      const result = await validateCourseCode(
+        lang, 
+        currentTopic?.title, 
+        currentQuestion?.text, 
+        code
+      );
+
+      setIsSuccess(result.success);
+      setOutput(`[Running ${lang}...]\n> ${result.success ? 'SUCCESS' : 'FAILURE'}: ${result.feedback}`);
+      
+      if (result.success) {
+        addToast("Hoppy Coding! Task completed! 🥕✨", "success");
+      } else {
+        addToast("Not quite right yet! Try again. 🐰", "error");
+      }
+    } catch (err) {
+      console.error("AI Validation failed, falling back to regex:", err);
+      // Fallback to local regex pattern check
       const pattern = currentQuestion.expectedPattern;
       const isValid = pattern.test(code);
 
       if (isValid) {
-        setOutput(`[Running ${lang}...]\n> Success! Pattern matched.\n\nGreat job! You can now move to the next question.`);
+        setOutput(`[Running ${lang}...]\n> Success! (Local check)\n\nGreat job! You can now move to the next question.`);
         setIsSuccess(true);
       } else {
         setOutput(`[Running ${lang}...]\n> Failure: Code did not match the expected pattern.\n\nTry again! Check your syntax or logic.`);
         setIsSuccess(false);
       }
-    }, 600);
+    }
   };
 
   // Keyboard shortcut: Shift+Enter
@@ -88,7 +202,7 @@ export default function CoursePage() {
   return (
     <div className="page">
       {/* Topbar */}
-      <div className="topbar" style={{ gap: 12 }}>
+      <div className="topbar" style={{ gap: 12, padding: '8px 16px' }}>
         <button 
           className="btn btn-ghost btn-sm" 
           onClick={() => setPage('course-menu')}
@@ -99,83 +213,139 @@ export default function CoursePage() {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 20 }}>{activeLangIcon}</span>
-          <div>
+          <div className="hide-mobile">
             <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--primary)', lineHeight: 1 }}>{lang?.toUpperCase() || ''}</div>
             <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-med)', textTransform: 'uppercase' }}>{level}</div>
           </div>
         </div>
 
-        <div style={{ flex: 1 }} />
+        <div className="course-tabs-mobile" style={{ display: 'none', flex: 1, justifyContent: 'center', gap: 4 }}>
+          <button className={`tab-btn ${activeTab === 'lesson' ? 'active' : ''}`} onClick={() => setActiveTab('lesson')}>Lesson</button>
+          <button className={`tab-btn ${activeTab === 'code' ? 'active' : ''}`} onClick={() => setActiveTab('code')}>Code</button>
+          <button className={`tab-btn ${activeTab === 'ai' ? 'active' : ''}`} onClick={() => setActiveTab('ai')}>AI Buddy</button>
+        </div>
+
+        <div style={{ flex: 1 }} className="hide-mobile" />
         <button className="btn btn-ghost btn-sm" onClick={() => setShowSettings(true)} style={{ padding: '8px', minWidth: 40 }}>⚙️</button>
       </div>
 
-      {/* Main Grid Layout */}
-      <div className="page-content-full scroll-area" style={{ paddingBottom: 0 }}>
-        <div className="course-grid" style={{ height: 'calc(100vh - 64px)' }}>
+      {/* Main Resizable Layout */}
+      <div className="page-content-full" style={{ paddingBottom: 0, overflow: 'hidden' }}>
+        <div 
+          className={`course-grid-resizable active-tab-${activeTab}`} 
+          style={{ 
+            display: 'flex',
+            height: 'calc(100vh - 56px)',
+            background: 'var(--border)'
+          }}
+        >
           
           {/* Left Column: Lesson Content */}
-          <div className="course-pane lesson-pane">
-            <div style={{ marginBottom: 20 }}>
-              <div style={{ fontSize: 10, color: 'var(--primary)', fontWeight: 800, marginBottom: 4 }}>// CURRICULUM</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+          {!lessonCollapsed && (
+            <div 
+              className={`course-pane lesson-pane ${activeTab === 'lesson' ? 'show-mobile' : 'hide-mobile'}`}
+              style={{ width: lessonWidth, flexShrink: 0, display: 'flex', flexDirection: 'column' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <div style={{ fontSize: 10, color: 'var(--primary)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <span>📑</span> CURRICULUM
+                </div>
+                <button className="btn-icon-sm hide-mobile" onClick={() => setLessonCollapsed(true)}>«</button>
+              </div>
+              
+              <div className="curriculum-list" style={{ marginBottom: 24, maxHeight: '30%', overflowY: 'auto' }}>
                 {topics.map((t, idx) => (
                   <button 
                     key={t.id}
-                    onClick={() => { setTopicIdx(idx); setQuestionIdx(0); }}
-                    className={`nav-item ${topicIdx === idx ? 'active' : ''}`}
-                    style={{ 
-                      flexDirection: 'row', justifyContent: 'flex-start', padding: '8px 12px', 
-                      background: topicIdx === idx ? 'rgba(0,255,136,0.1)' : 'transparent',
-                      width: '100%', borderRadius: 8, textAlign: 'left'
-                    }}
+                    onClick={() => { setTopicIdx(idx); setQuestionIdx(0); if(window.innerWidth < 1024) setActiveTab('code'); }}
+                    className={`curriculum-item ${topicIdx === idx ? 'active' : ''}`}
                   >
                     <span style={{ fontSize: 14, marginRight: 8 }}>{topicIdx === idx ? '📖' : '📁'}</span>
-                    <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{t.title}</span>
+                    <span className="text-truncate">{t.title}</span>
                   </button>
                 ))}
+                
+                <button 
+                  className="curriculum-item" 
+                  onClick={handleGenerateBonus}
+                  disabled={isGeneratingTopic}
+                  style={{ border: '1px dashed var(--primary-low)', color: 'var(--primary)', background: 'rgba(0,255,136,0.03)' }}
+                >
+                  <span style={{ fontSize: 14, marginRight: 8 }}>✨</span>
+                  <span>{isGeneratingTopic ? "Generating..." : "Generate More Topics"}</span>
+                </button>
               </div>
-            </div>
 
-            {currentTopic && (
-              <div className="animate-in">
-                <h2 style={{ fontSize: 20, marginBottom: 12, color: 'var(--primary)' }}>{currentTopic.title}</h2>
-                <div style={{ lineHeight: 1.6, color: 'var(--text-high)', fontSize: 14, marginBottom: 20 }}>
-                  {currentTopic.theory}
-                </div>
-
-                <div style={{ padding: 16, background: 'var(--bg-deep)', borderRadius: 12, border: '1px solid var(--primary-low)' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--primary)' }}>TASK {questionIdx + 1}/5</span>
-                    <div style={{ display: 'flex', gap: 4 }}>
-                      {[...Array(5)].map((_, i) => (
-                        <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: i < questionIdx ? 'var(--primary)' : i === questionIdx ? 'var(--primary-low)' : 'var(--bg-soft)' }} />
-                      ))}
+              {currentTopic && (
+                <div className="animate-in" style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                  <div style={{ 
+                    padding: 16, 
+                    background: 'linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-soft) 100%)', 
+                    borderRadius: 12, 
+                    border: '1px solid var(--border)',
+                    marginBottom: 16
+                  }}>
+                    <h2 style={{ fontSize: 18, marginBottom: 8, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span>📚</span> {currentTopic.title}
+                    </h2>
+                    <div style={{ 
+                      lineHeight: 1.6, 
+                      color: 'var(--text-high)', 
+                      fontSize: 13, 
+                      maxHeight: '150px', 
+                      overflowY: 'auto',
+                      paddingRight: 8
+                    }} className="scroll-area">
+                      {currentTopic.theory}
                     </div>
                   </div>
-                  <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-high)' }}>
-                    {currentQuestion?.text}
+
+                  <div style={{ 
+                    padding: 16, 
+                    background: 'var(--bg-deep)', 
+                    borderRadius: 12, 
+                    border: '1px solid var(--primary-low)',
+                    boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                    position: 'relative'
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                      <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--primary)', letterSpacing: 1 }}>🎯 TASK {questionIdx + 1}/5</span>
+                      {isSuccess && <span style={{ fontSize: 12 }}>✅</span>}
+                    </div>
+                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-high)', lineHeight: 1.5 }}>
+                      {currentQuestion?.text}
+                    </div>
                   </div>
+
+                  {isSuccess && (
+                    <button 
+                      className="btn btn-primary" 
+                      onClick={() => { nextQuestion(); if(window.innerWidth < 1024) setActiveTab('code'); }}
+                      style={{ width: '100%', marginTop: 16, padding: '12px', fontWeight: 800, letterSpacing: 1 }}
+                    >
+                      CONTINUE TO NEXT →
+                    </button>
+                  )}
                 </div>
+              )}
+            </div>
+          )}
 
-                {isSuccess && (
-                  <button 
-                    className="btn btn-primary" 
-                    onClick={nextQuestion}
-                    style={{ width: '100%', marginTop: 20, padding: '12px' }}
-                  >
-                    CONTINUE →
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
+          {/* Left Resizer */}
+          {!lessonCollapsed && <div className="resizer-v hide-mobile" onMouseDown={startResizing('lesson')} />}
 
-          {/* Middle Column: IDE (Editor + Terminal) */}
-          <div className="course-pane ide-pane">
-            <div className="editor-container">
+          {/* Middle Column: IDE */}
+          <div className={`course-pane ide-pane ${activeTab === 'code' ? 'show-mobile' : 'hide-mobile'}`} style={{ flex: 1 }}>
+            <div className="editor-container" style={{ flex: 1 }}>
               <div className="editor-header">
-                <span style={{ fontSize: 11, fontWeight: 800 }}>main.{lang === 'javascript' ? 'js' : lang === 'python' ? 'py' : lang === 'typescript' ? 'ts' : lang === 'cpp' ? 'cpp' : lang === 'csharp' ? 'cs' : lang === 'rust' ? 'rs' : lang}</span>
-                <button className="btn btn-primary btn-sm" onClick={runCode} style={{ padding: '4px 12px', fontSize: 10 }}>▶ RUN CODE</button>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  {lessonCollapsed && <button className="btn-icon-sm" onClick={() => setLessonCollapsed(false)}>»</button>}
+                  <span style={{ fontSize: 10, fontWeight: 800 }}>main.{lang === 'javascript' ? 'js' : lang === 'python' ? 'py' : lang === 'typescript' ? 'ts' : lang === 'cpp' ? 'cpp' : lang === 'csharp' ? 'cs' : lang === 'rust' ? 'rs' : lang}</span>
+                </div>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <button className="btn btn-primary btn-sm" onClick={runCode} style={{ padding: '4px 10px', fontSize: 10 }} title="Shortcut: Shift + Enter">▶ RUN</button>
+                  {aiCollapsed && <button className="btn-icon-sm" onClick={() => setAiCollapsed(false)}>«</button>}
+                </div>
               </div>
               <div className="editor-scroll">
                 <MonacoEditor
@@ -196,24 +366,71 @@ export default function CoursePage() {
               </div>
             </div>
 
-            <div className="terminal-container">
-              <div className="editor-header" style={{ borderBottom: 'none', background: 'rgba(0,0,0,0.3)' }}>
-                <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--text-med)' }}>TERMINAL OUTPUT</span>
+            {/* Terminal Resizer */}
+            <div className="resizer-h hide-mobile" onMouseDown={startResizing('terminal')} />
+
+            <div className="terminal-container" style={{ height: activeTab === 'code' ? terminalHeight : '180px' }}>
+              <div className="editor-header" style={{ borderBottom: 'none', background: 'rgba(0,0,0,0.3)', height: 28 }}>
+                <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--text-med)' }}>TERMINAL OUTPUT</span>
               </div>
-              <pre className="terminal-body" style={{ color: isSuccess ? 'var(--primary)' : 'var(--text-high)' }}>{output}</pre>
+              <pre className="terminal-body" style={{ color: isSuccess ? 'var(--primary)' : 'var(--text-high)', fontSize: 12 }}>{output}</pre>
             </div>
           </div>
 
-          {/* Right Column: AI Assistant Space */}
-          <div className="course-pane ai-pane">
-            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', opacity: 0.5 }}>
-              <Bunny size={60} mood={isSuccess ? "happy" : "cool"} animate />
-              <div style={{ marginTop: 16, fontWeight: 800, fontSize: 12, color: 'var(--primary)' }}>AI ASSISTANT</div>
-              <div style={{ fontSize: 10, maxWidth: 160, marginTop: 8 }}>
-                {isSuccess ? "Excellent work! You've mastered this task." : "I'm here to help if you get stuck with the patterns."}
+          {/* Right Resizer */}
+          {!aiCollapsed && <div className="resizer-v hide-mobile" onMouseDown={startResizing('ai')} />}
+
+          {/* Right Column: AI Assistant */}
+          {!aiCollapsed && (
+            <div 
+              className={`course-pane ai-pane ${activeTab === 'ai' ? 'show-mobile' : 'hide-mobile'}`} 
+              style={{ width: aiWidth, background: 'var(--bg-deep)', display: 'flex', flexDirection: 'column', flexShrink: 0 }}
+            >
+              <div className="editor-header" style={{ borderBottom: '1px solid var(--border)', background: 'rgba(0,0,0,0.3)' }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--primary)' }}>AI ASSISTANT 🐰</span>
+                </div>
+                <button className="btn-icon-sm hide-mobile" onClick={() => setAiCollapsed(true)}>»</button>
+              </div>
+              
+              <div style={{ flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }} className="scroll-area">
+                {messages.map((msg, i) => (
+                  <div key={i} style={{ 
+                    alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                    maxWidth: '90%',
+                    background: msg.role === 'user' ? 'var(--bg-soft)' : 'rgba(0,255,136,0.05)',
+                    padding: '8px 12px',
+                    borderRadius: 12,
+                    border: msg.role === 'user' ? '1px solid var(--border)' : '1px solid var(--primary-low)',
+                    fontSize: 12,
+                    lineHeight: 1.4,
+                    whiteSpace: 'pre-wrap'
+                  }}>
+                    {msg.content}
+                  </div>
+                ))}
+                {isTyping && (
+                  <div className="pulse-text" style={{ fontSize: 10, color: 'var(--text-med)', paddingLeft: 4 }}>
+                    Typing...
+                  </div>
+                )}
+              </div>
+
+              <div style={{ padding: 10, borderTop: '1px solid var(--border)', display: 'flex', gap: 6 }}>
+                <input 
+                  className="input" 
+                  placeholder="Ask..." 
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                  style={{ fontSize: 12, padding: '8px 12px' }}
+                />
+                <button className="btn btn-primary btn-sm" onClick={handleSendMessage} style={{ padding: '8px', minWidth: 40 }}>
+                  🚀
+                </button>
               </div>
             </div>
-          </div>
+          )}
 
         </div>
       </div>

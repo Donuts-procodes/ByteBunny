@@ -24,3 +24,6 @@ Thumbs.db
 *.swp
 *.sublime-project
 *.sublime-workspace
+
+# Android Auth
+README-ANDROID-AUTH.md

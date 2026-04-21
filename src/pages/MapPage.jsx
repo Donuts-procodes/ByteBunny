@@ -54,7 +54,7 @@ export default function MapPage() {
     top:  i * 84 + 16,
   }));
 
-  const totalH = levels.length * 84 + 80;
+  const totalH = levels.length * 84 + 400;
 
   return (
     <div className="page">
@@ -185,6 +185,31 @@ export default function MapPage() {
               </div>
             );
           })}
+
+          {/* End of Map Message */}
+          <div style={{ 
+            position: 'absolute', 
+            top: levels.length * 84 + 80, 
+            left: '50%', 
+            transform: 'translateX(-50%)',
+            textAlign: 'center',
+            width: '100%',
+            maxWidth: '320px',
+            padding: '40px 0 160px'
+          }}>
+            <div style={{ fontSize: 50, marginBottom: 16 }}>🐰</div>
+            <div className="card" style={{ 
+              background: 'linear-gradient(135deg, var(--bg-soft) 0%, var(--bg-deep) 100%)',
+              border: '1px dashed var(--primary)',
+              padding: '24px',
+              boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+            }}>
+              <div style={{ fontWeight: 800, color: 'var(--primary)', fontSize: 14, marginBottom: 8, letterSpacing: 1.5 }}>HOPPY NEWS!</div>
+              <p style={{ fontSize: 13, color: 'var(--text-high)', margin: 0, lineHeight: 1.6, fontStyle: 'italic' }}>
+                "You've burrowed deep, little coder! More levels are currently being dug up in the garden. Stay tuned for future updates!"
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 

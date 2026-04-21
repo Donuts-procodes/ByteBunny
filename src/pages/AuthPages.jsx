@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useAppStore } from "../stores/enhanced-appStore";
 import { Bunny } from "../components/UI";
 // 👇 Import Firebase Auth utilities directly
-import { auth } from "../lib/firebase"; 
+import { auth, firebaseResetPassword } from "../lib/firebase"; 
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 // ── Gammy bunny loading button content ───────────────────────────────────────
@@ -180,7 +180,7 @@ export function LoginPage({ onBack, onSignup }) {
           <div style={{ textAlign: "center", marginBottom: 24 }}>
             <Bunny size={68} mood="happy" animate={false} />
             <h1 style={{ fontSize: 24, fontWeight: 800, marginTop: 10 }}>Welcome Back!</h1>
-            <p style={{ color: "var(--text2)", marginTop: 4, fontSize: 13 }}>Continue your coding journey 🐰</p>
+            <p style={{ color: "var(--text2)", marginTop: 4, fontSize: 13 }}>Continue your coding journey</p>
           </div>
 
           <div className="card" style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%" }}>
@@ -189,6 +189,10 @@ export function LoginPage({ onBack, onSignup }) {
               onClick={() => handleGooglePopupAuth(setGoogleLoading, addToast, login)} 
               loading={googleLoading} 
             />
+            
+            <p style={{ fontSize: 10, color: "var(--text-low)", textAlign: "center", marginTop: -6 }}>
+              💡 Android users: If Google fails, use email & password login below.
+            </p>
             
             <Divider />
 
@@ -204,7 +208,15 @@ export function LoginPage({ onBack, onSignup }) {
             </div>
 
             <div style={fieldWrap}>
-              <label style={labelStyle}>PASSWORD</label>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <label style={labelStyle}>PASSWORD</label>
+                <button 
+                  onClick={() => useAppStore.getState().setPage('forgot-password')} 
+                  style={{ background: "none", border: "none", color: "var(--primary)", cursor: "pointer", fontSize: 11, fontWeight: 700 }}
+                >
+                  Forgot?
+                </button>
+              </div>
               <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
 
@@ -216,6 +228,63 @@ export function LoginPage({ onBack, onSignup }) {
           <p style={{ textAlign: "center", marginTop: 18, color: "var(--text2)", fontSize: 13 }}>
             No account? <button onClick={onSignup} style={{ background: "none", border: "none", color: "var(--primary)", cursor: "pointer", fontFamily: "var(--font)", fontWeight: 700 }}>Sign up →</button>
           </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Forgot Password Page ──────────────────────────────────────────────────────
+export function ForgotPasswordPage({ onBack }) {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const addToast = useAppStore((s) => s.addToast);
+
+  const handleReset = async () => {
+    if (!email.trim()) {
+      addToast("Please enter your email", "error");
+      return;
+    }
+    setLoading(true);
+    try {
+      await firebaseResetPassword(email);
+      addToast("Reset link sent! Check your inbox 📧", "success");
+      onBack();
+    } catch (e) {
+      addToast(e.message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="page">
+      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '120px' }}>
+        <div style={{ width: "100%", maxWidth: 380 }}>
+          <button className="btn btn-ghost btn-sm" onClick={onBack} style={{ marginBottom: 20 }}>← Back</button>
+
+          <div style={{ textAlign: "center", marginBottom: 24 }}>
+            <Bunny size={68} mood="cool" animate={false} />
+            <h1 style={{ fontSize: 24, fontWeight: 800, marginTop: 10 }}>Reset Password</h1>
+            <p style={{ color: "var(--text2)", marginTop: 4, fontSize: 13 }}>We'll send a magic link to your email 🥕</p>
+          </div>
+
+          <div className="card" style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%" }}>
+            <div style={fieldWrap}>
+              <label style={labelStyle}>EMAIL ADDRESS</label>
+              <input 
+                className="input" 
+                placeholder="you@example.com" 
+                value={email} 
+                onChange={(e) => setEmail(e.target.value)} 
+                onKeyDown={(e) => e.key === "Enter" && handleReset()} 
+              />
+            </div>
+
+            <button className="btn btn-primary btn-full" onClick={handleReset} disabled={loading} style={{ marginTop: 2 }}>
+              {loading ? <BunnyLoader text="Sending…" /> : "📧 Send Reset Link"}
+            </button>
+          </div>
         </div>
       </div>
     </div>
