@@ -38,6 +38,22 @@ export const BADGE_RULES = [
     check: (stats) => stats.maxLevel >= 67 },
   { id: 'egg_69', label: 'Nice', description: 'Reached level 69. Nice.', icon: '😏', 
     check: (stats) => stats.maxLevel >= 69 },
+
+  // New Bunny-Focused Easter Eggs
+  { id: 'rabbit_hole', label: 'Down the Rabbit Hole', description: 'Explored the deep burrows of ByteBunny', icon: '🌀', 
+    check: (stats) => stats.rabbitHoleClicks >= 5 },
+  { id: 'lagomorph', label: 'Lagomorph Logic', description: 'Just grazing... (Idle for 5 minutes)', icon: '🥗', 
+    check: (stats) => stats.isLagomorph },
+  { id: 'quick_fox', label: 'Quick Brown Fox', description: 'The fox jumped! Panic mode enabled.', icon: '🦊', 
+    check: (stats) => stats.foxPangram },
+  { id: 'bunny_hop', label: 'Bunny Hop', description: 'Hoppy feet! (Spacebar spree)', icon: '👟', 
+    check: (stats) => stats.bunnyHops >= 5 },
+  { id: 'golden_carrot', label: 'The Golden Carrot', description: 'Unlocked the carrot theme with the legendary code', icon: '🥕', 
+    check: (stats) => stats.konamiUnlocked },
+  { id: 'carat_24', label: '24-Carat Code', description: 'Entered the precious number', icon: '💎', 
+    check: (stats) => stats.carat24Entered },
+  { id: 'order_66', label: 'Execute Order 66', description: 'Complete level 66 in C language', icon: '💀', 
+    check: (stats) => stats.progress?.[10]?.[66]?.completed },
 ];
 
 /**

@@ -35,6 +35,17 @@ export const useAppStore = create(
       xp:        0,
       streak:    0,
       lastLogin: '',
+      
+      // Easter Egg Tracking
+      rabbitHoleClicks: 0,
+      bunnyHops: 0,
+      konamiUnlocked: false,
+      foxPangram: false,
+      isLagomorph: false,
+      carat24Entered: false,
+      isPanicMode: false,
+      isCarrotTheme: false,
+      isBouncing: false,
 
       // UI
       darkMode:       true,
@@ -387,6 +398,49 @@ export const useAppStore = create(
 
       reviewTest: (testData) => {
         set({ page: 'test', pendingReview: testData });
+      },
+
+      // ── Easter Egg Triggers ──────────────────────────────────────────────────────
+      triggerRabbitHole: () => {
+        const current = get().rabbitHoleClicks;
+        set({ rabbitHoleClicks: current + 1 });
+        if (current + 1 === 5) {
+          get().addToast("🌀 Down the Rabbit Hole! You've gone too deep!", "success");
+        }
+      },
+
+      triggerBunnyHop: () => {
+        const current = get().bunnyHops;
+        set({ bunnyHops: current + 1, isBouncing: true });
+        setTimeout(() => set({ isBouncing: false }), 500);
+        if (current + 1 === 5) {
+          get().addToast("👟 Bunny Hop! Check those hops!", "success");
+        }
+      },
+
+      unlockKonami: () => {
+        if (get().konamiUnlocked) return;
+        set({ konamiUnlocked: true, isCarrotTheme: true });
+        get().addToast("🥕 THE GOLDEN CARROT UNLOCKED!", "success");
+      },
+
+      triggerFoxPanic: () => {
+        if (get().foxPangram) return;
+        set({ foxPangram: true, isPanicMode: true });
+        get().addToast("🦊 THE FOX IS HERE! PANIC!", "error");
+        setTimeout(() => set({ isPanicMode: false }), 10000);
+      },
+
+      triggerLagomorph: () => {
+        if (get().isLagomorph) return;
+        set({ isLagomorph: true });
+        get().addToast("🥗 Lagomorph Logic: Happy grazing!", "success");
+      },
+
+      triggerCarat24: () => {
+        if (get().carat24Entered) return;
+        set({ carat24Entered: true });
+        get().addToast("💎 24-Carat Code! Pure brilliance.", "success");
       },
     }),
     {

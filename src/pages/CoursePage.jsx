@@ -204,7 +204,7 @@ export default function CoursePage() {
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, cursor: isResizing.current === 'terminal' ? 'row-resize' : 'col-resize', background: 'transparent' }} />
       )}
 
-      <div className="topbar" style={{ gap: 12, padding: '8px 16px' }}>
+      <div className="topbar" style={{ gap: 12, padding: '8px 16px', height: 64 }}>
         <button className="btn btn-ghost btn-sm" onClick={() => setPage('course-menu')} style={{ minWidth: 40, padding: 8, fontSize: 16 }}>←</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 20 }}>{activeLangIcon}</span>
@@ -213,54 +213,60 @@ export default function CoursePage() {
             <div style={{ fontSize: 10, fontWeight: 600, color: 'var(--text-med)', textTransform: 'uppercase' }}>{level}</div>
           </div>
         </div>
-        <div style={{ flex: 1 }} />
+
+        {/* Mobile Tabs */}
+        <div className="course-tabs-mobile" style={{ display: 'none', gap: 4, flex: 1, justifyContent: 'center' }}>
+          <button className={`tab-btn ${activeTab === 'lesson' ? 'active' : ''}`} onClick={() => setActiveTab('lesson')}>Lesson</button>
+          <button className={`tab-btn ${activeTab === 'code' ? 'active' : ''}`} onClick={() => setActiveTab('code')}>Code</button>
+          <button className={`tab-btn ${activeTab === 'ai' ? 'active' : ''}`} onClick={() => setActiveTab('ai')}>AI</button>
+        </div>
+
+        <div className="hide-mobile" style={{ flex: 1 }} />
         <button className="btn btn-ghost btn-sm" onClick={() => setShowSettings(true)} style={{ padding: '8px', minWidth: 40 }}>⚙️</button>
       </div>
 
       <div className="page-content-full" style={{ paddingBottom: 0, overflow: 'hidden' }}>
-        <div className="course-grid" ref={gridRef} style={{ display: 'flex', height: 'calc(100vh - 64px)', background: 'var(--border)', gridTemplateColumns: 'none' }}>
+        <div className="course-grid" ref={gridRef} style={{ height: 'calc(100vh - 64px)', background: 'var(--border)', display: 'flex' }}>
           
-          {!lessonCollapsed && (
-            <div className={`course-pane lesson-pane ${activeTab === 'lesson' ? 'show-mobile' : 'hide-mobile'}`} style={{ width: lessonWidth, flexShrink: 0, overflowY: 'auto' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                <div style={{ fontSize: 10, color: 'var(--primary)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}><span>📑</span> CURRICULUM</div>
-                <button className="btn-icon-sm hide-mobile" onClick={() => setLessonCollapsed(true)}>«</button>
-              </div>
-              <div className="curriculum-list" style={{ marginBottom: 20, maxHeight: '160px', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 8, padding: 4 }}>
-                {topics.map((t, idx) => (
-                  <button key={t.id} onClick={() => setCourseSelection({ topicIdx: idx, questionIdx: 0 })} className={`curriculum-item ${topicIdx === idx ? 'active' : ''}`}>
-                    <span style={{ fontSize: 14, marginRight: 8 }}>{topicIdx === idx ? '📖' : '📁'}</span>
-                    <span className="text-truncate">{t.title}</span>
-                  </button>
-                ))}
-                <button className="curriculum-item" onClick={handleGenerateBonus} disabled={isGeneratingTopic} style={{ border: '1px dashed var(--primary-low)', color: 'var(--primary)', background: 'rgba(0,255,136,0.03)' }}>
-                  <span>✨ {isGeneratingTopic ? "Generating..." : "Generate More"}</span>
-                </button>
-              </div>
-              {currentTopic && (
-                <div className="animate-in">
-                  <div style={{ padding: 16, background: 'linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-soft) 100%)', borderRadius: 12, border: '1px solid var(--border)', marginBottom: 16 }}>
-                    <h2 style={{ fontSize: 18, marginBottom: 8, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: 8 }}><span>📚</span> {currentTopic.title}</h2>
-                    <div style={{ lineHeight: 1.6, color: 'var(--text-high)', fontSize: 13, maxHeight: '140px', overflowY: 'auto' }} className="scroll-area">{currentTopic.theory}</div>
-                  </div>
-                  <div style={{ padding: 16, background: 'var(--bg-deep)', borderRadius: 12, border: '1px solid var(--primary-low)', marginBottom: 16 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                      <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--primary)' }}>🎯 TASK {questionIdx + 1}/5</span>
-                      {isSuccess && <span>✅</span>}
-                    </div>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-high)' }}>{currentQuestion?.text}</div>
-                  </div>
-                  {isSuccess && (
-                    <button className="btn btn-primary" onClick={nextQuestion} style={{ width: '100%', padding: '12px', fontWeight: 800 }}>CONTINUE →</button>
-                  )}
-                </div>
-              )}
+          <div className={`course-pane lesson-pane ${activeTab === 'lesson' ? 'show-mobile' : 'hide-mobile'}`} style={{ width: lessonCollapsed ? 0 : lessonWidth, flexShrink: 0, overflowY: 'auto', display: lessonCollapsed ? 'none' : '' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+              <div style={{ fontSize: 10, color: 'var(--primary)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: 6 }}><span>📑</span> CURRICULUM</div>
+              <button className="btn-icon-sm hide-mobile" onClick={() => setLessonCollapsed(true)}>«</button>
             </div>
-          )}
+            <div className="curriculum-list" style={{ marginBottom: 20, maxHeight: '160px', overflowY: 'auto', border: '1px solid var(--border)', borderRadius: 8, padding: 4 }}>
+              {topics.map((t, idx) => (
+                <button key={t.id} onClick={() => setCourseSelection({ topicIdx: idx, questionIdx: 0 })} className={`curriculum-item ${topicIdx === idx ? 'active' : ''}`}>
+                  <span style={{ fontSize: 14, marginRight: 8 }}>{topicIdx === idx ? '📖' : '📁'}</span>
+                  <span className="text-truncate">{t.title}</span>
+                </button>
+              ))}
+              <button className="curriculum-item" onClick={handleGenerateBonus} disabled={isGeneratingTopic} style={{ border: '1px dashed var(--primary-low)', color: 'var(--primary)', background: 'rgba(0,255,136,0.03)' }}>
+                <span>✨ {isGeneratingTopic ? "Generating..." : "Generate More"}</span>
+              </button>
+            </div>
+            {currentTopic && (
+              <div className="animate-in">
+                <div style={{ padding: 16, background: 'linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-soft) 100%)', borderRadius: 12, border: '1px solid var(--border)', marginBottom: 16 }}>
+                  <h2 style={{ fontSize: 18, marginBottom: 8, color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: 8 }}><span>📚</span> {currentTopic.title}</h2>
+                  <div style={{ lineHeight: 1.6, color: 'var(--text-high)', fontSize: 13, maxHeight: '140px', overflowY: 'auto' }} className="scroll-area">{currentTopic.theory}</div>
+                </div>
+                <div style={{ padding: 16, background: 'var(--bg-deep)', borderRadius: 12, border: '1px solid var(--primary-low)', marginBottom: 16 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <span style={{ fontSize: 9, fontWeight: 800, color: 'var(--primary)' }}>🎯 TASK {questionIdx + 1}/5</span>
+                    {isSuccess && <span>✅</span>}
+                  </div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-high)' }}>{currentQuestion?.text}</div>
+                </div>
+                {isSuccess && (
+                  <button className="btn btn-primary" onClick={nextQuestion} style={{ width: '100%', padding: '12px', fontWeight: 800 }}>CONTINUE →</button>
+                )}
+              </div>
+            )}
+          </div>
 
           {!lessonCollapsed && <div className="resizer-v hide-mobile" onMouseDown={startResizing('lesson')} />}
 
-          <div className="course-pane ide-pane" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+          <div className={`course-pane ide-pane ${activeTab === 'code' ? 'show-mobile' : 'hide-mobile'}`} style={{ flex: 1, display: (activeTab === 'code' || !lessonCollapsed || !aiCollapsed) ? 'flex' : 'none', flexDirection: 'column' }}>
             <div className="editor-container" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
               <div className="editor-header">
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -295,32 +301,30 @@ export default function CoursePage() {
 
           {!aiCollapsed && <div className="resizer-v hide-mobile" onMouseDown={startResizing('ai')} />}
 
-          {!aiCollapsed && (
-            <div className="course-pane ai-pane" style={{ width: aiWidth, background: 'var(--bg-deep)', display: 'flex', flexDirection: 'column' }}>
-              <div className="editor-header">
-                <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--primary)' }}>AI BUDDY 🐰</span>
-                <button className="btn-icon-sm hide-mobile" onClick={() => setAiCollapsed(true)}>»</button>
-              </div>
-              <div style={{ flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }} className="scroll-area">
-                {messages.map((msg, i) => (
-                  <div key={i} style={{ 
-                    alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                    maxWidth: '90%',
-                    background: msg.role === 'user' ? 'var(--bg-soft)' : 'rgba(0,255,136,0.05)',
-                    padding: '8px 12px',
-                    borderRadius: 12,
-                    border: '1px solid var(--border)',
-                    fontSize: 12
-                  }}>{msg.content}</div>
-                ))}
-                {isTyping && <div className="pulse-text" style={{ fontSize: 10, color: 'var(--text-med)' }}>Typing...</div>}
-              </div>
-              <div style={{ padding: 10, borderTop: '1px solid var(--border)', display: 'flex', gap: 6 }}>
-                <input className="input" placeholder="Ask..." value={prompt} onChange={(e) => setPrompt(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} style={{ fontSize: 12 }} />
-                <button className="btn btn-primary btn-sm" onClick={handleSendMessage}>🚀</button>
-              </div>
+          <div className={`course-pane ai-pane ${activeTab === 'ai' ? 'show-mobile' : 'hide-mobile'}`} style={{ width: aiCollapsed ? 0 : aiWidth, background: 'var(--bg-deep)', display: aiCollapsed ? 'none' : 'flex', flexDirection: 'column' }}>
+            <div className="editor-header">
+              <span style={{ fontSize: 10, fontWeight: 800, color: 'var(--primary)' }}>AI BUDDY 🐰</span>
+              <button className="btn-icon-sm hide-mobile" onClick={() => setAiCollapsed(true)}>»</button>
             </div>
-          )}
+            <div style={{ flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 10 }} className="scroll-area">
+              {messages.map((msg, i) => (
+                <div key={i} style={{ 
+                  alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                  maxWidth: '90%',
+                  background: msg.role === 'user' ? 'var(--bg-soft)' : 'rgba(0,255,136,0.05)',
+                  padding: '8px 12px',
+                  borderRadius: 12,
+                  border: '1px solid var(--border)',
+                  fontSize: 12
+                }}>{msg.content}</div>
+              ))}
+              {isTyping && <div className="pulse-text" style={{ fontSize: 10, color: 'var(--text-med)' }}>Typing...</div>}
+            </div>
+            <div style={{ padding: 10, borderTop: '1px solid var(--border)', display: 'flex', gap: 6 }}>
+              <input className="input" placeholder="Ask..." value={prompt} onChange={(e) => setPrompt(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} style={{ fontSize: 12 }} />
+              <button className="btn btn-primary btn-sm" onClick={handleSendMessage}>🚀</button>
+            </div>
+          </div>
         </div>
       </div>
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}

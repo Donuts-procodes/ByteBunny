@@ -155,7 +155,6 @@ const handleGooglePopupAuth = async (setLoadingState, addToast, appStoreLoginMet
 export function LoginPage({ onBack, onSignup }) {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -163,10 +162,6 @@ export function LoginPage({ onBack, onSignup }) {
   const addToast = useAppStore((s) => s.addToast);
 
   const handleEmailLogin = async () => {
-    if (!acceptedTerms) {
-      addToast("Please accept Terms & Privacy Policy", "error");
-      return;
-    }
     if (!identifier.trim() || !password) {
       addToast("Fill all fields", "error");
       return;
@@ -178,8 +173,8 @@ export function LoginPage({ onBack, onSignup }) {
 
   return (
     <div className="page">
-      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '120px' }}>
-        <div style={{ width: "100%", maxWidth: 380 }}>
+      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '40px' }}>
+        <div style={{ width: "100%", maxWidth: 400, padding: '0 10px' }}>
           <button className="btn btn-ghost btn-sm" onClick={onBack} style={{ marginBottom: 20 }}>← Back</button>
 
           <div style={{ textAlign: "center", marginBottom: 24 }}>
@@ -192,10 +187,6 @@ export function LoginPage({ onBack, onSignup }) {
             
             <GoogleButton 
               onClick={() => {
-                if (!acceptedTerms) {
-                  addToast("Please accept Terms & Privacy Policy", "error");
-                  return;
-                }
                 handleGooglePopupAuth(setGoogleLoading, addToast, login);
               }} 
               loading={googleLoading} 
@@ -229,19 +220,6 @@ export function LoginPage({ onBack, onSignup }) {
                 </button>
               </div>
               <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '4px 0' }}>
-              <input 
-                type="checkbox" 
-                id="terms-login" 
-                checked={acceptedTerms} 
-                onChange={(e) => setAcceptedTerms(e.target.checked)}
-                style={{ cursor: 'pointer', width: 18, height: 18, accentColor: 'var(--primary)' }}
-              />
-              <label htmlFor="terms-login" style={{ fontSize: 12, color: 'var(--text-med)', cursor: 'pointer' }}>
-                I agree to <button onClick={() => useAppStore.getState().setPage('terms')} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'var(--primary)', cursor: 'pointer' }}>Terms</button> & <button onClick={() => useAppStore.getState().setPage('privacy')} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'var(--primary)', cursor: 'pointer' }}>Privacy Policy</button>
-              </label>
             </div>
 
             <button className="btn btn-primary btn-full" onClick={handleEmailLogin} disabled={loading} style={{ marginTop: 2 }}>
@@ -283,8 +261,8 @@ export function ForgotPasswordPage({ onBack }) {
 
   return (
     <div className="page">
-      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '120px' }}>
-        <div style={{ width: "100%", maxWidth: 380 }}>
+      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingBottom: '40px' }}>
+        <div style={{ width: "100%", maxWidth: 400, padding: '0 10px' }}>
           <button className="btn btn-ghost btn-sm" onClick={onBack} style={{ marginBottom: 20 }}>← Back</button>
 
           <div style={{ textAlign: "center", marginBottom: 24 }}>
@@ -355,8 +333,8 @@ export function SignupPage({ onBack, onLogin }) {
 
   return (
     <div className="page">
-      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingBottom: '120px' }}>
-        <div style={{ width: "100%", maxWidth: 380 }}>
+      <div className="page-content" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start', paddingBottom: '60px' }}>
+        <div style={{ width: "100%", maxWidth: 400, padding: '0 10px' }}>
           <button className="btn btn-ghost btn-sm" onClick={onBack} style={{ marginBottom: 20 }}>← Back</button>
 
           <div style={{ textAlign: "center", marginBottom: 24 }}>
@@ -366,7 +344,7 @@ export function SignupPage({ onBack, onLogin }) {
           </div>
 
           <div className="card" style={{ display: "flex", flexDirection: "column", gap: 14, width: "100%" }}>
-            
+
             <GoogleButton 
               onClick={() => {
                 if (!acceptedTerms) {
@@ -412,10 +390,10 @@ export function SignupPage({ onBack, onLogin }) {
                 id="terms-signup" 
                 checked={acceptedTerms} 
                 onChange={(e) => setAcceptedTerms(e.target.checked)}
-                style={{ cursor: 'pointer', width: 18, height: 18, accentColor: 'var(--primary)' }}
+                style={{ cursor: 'pointer', width: 20, height: 20, accentColor: 'var(--primary)' }}
               />
-              <label htmlFor="terms-signup" style={{ fontSize: 12, color: 'var(--text-med)', cursor: 'pointer' }}>
-                I agree to <a href="#" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Terms</a> & <a href="#" style={{ color: 'var(--primary)', textDecoration: 'none' }}>Privacy Policy</a>
+              <label htmlFor="terms-signup" style={{ fontSize: 13, color: 'var(--text-med)', cursor: 'pointer', fontWeight: 500 }}>
+                I agree to the <button onClick={() => useAppStore.getState().setPage('terms')} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'var(--primary)', cursor: 'pointer', textDecoration: 'underline', fontWeight: 700 }}>Terms</button> & <button onClick={() => useAppStore.getState().setPage('privacy')} style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'var(--primary)', cursor: 'pointer', textDecoration: 'underline', fontWeight: 700 }}>Privacy Policy</button>
               </label>
             </div>
 

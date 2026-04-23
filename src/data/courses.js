@@ -923,7 +923,7 @@ export const COURSE_DATA = {
         { qId: 'h9q4', text: 'Task.Run', defaultCode: '', expectedPattern: /Task\.Run/ },
         { qId: 'h9q5', text: 'Return Task<int>', defaultCode: '', expectedPattern: /Task<int>/ }
       ]},
-      { id: 'h10', title: 'Delegates', theory: 'A "delegate" is a type that represents references to methods with a particular parameter list and return type. They are essentially type-safe function pointers. Built-in delegates like Action and Func make it easy to pass functions as arguments, serving as the basis for the C# event system.', questions: [
+      { id: 'h10', title: 'Delegates', theory: 'A "delegate" is a type that represents references to methods with a particular parameter list and return type. They are essentially type-safe function pointers. Built-in delegates like Action and Func make it easy to pass functions as arguments, serving as the basis for the C# event system logic.', questions: [
         { qId: 'h10q1', text: 'Define delegate', defaultCode: '', expectedPattern: /delegate\s*void/ },
         { qId: 'h10q2', text: 'Use Action delegate', defaultCode: '', expectedPattern: /Action/ },
         { qId: 'h10q3', text: 'Use Func delegate', defaultCode: '', expectedPattern: /Func<.*>/ },
@@ -932,7 +932,76 @@ export const COURSE_DATA = {
       ]}
     ]
   },
+  c: {
+    basic: [
+      {
+        id: 'c1', title: 'Hello C', theory: 'C is a foundational, procedural language. Every C program starts with the "main" function. You include <stdio.h> to use printf() for output. Every statement must end with a semicolon (;).',
+        questions: [
+          { qId: 'c1q1', text: 'Include stdio.h', defaultCode: '', expectedPattern: /#include\s*<stdio\.h>/ },
+          { qId: 'c1q2', text: 'Define int main()', defaultCode: '', expectedPattern: /int\s*main\(\)/ },
+          { qId: 'c1q3', text: 'Print "Hello" with printf', defaultCode: '', expectedPattern: /printf\(["']Hello["']\)/ },
+          { qId: 'c1q4', text: 'Print with newline \\n', defaultCode: '', expectedPattern: /\\n/ },
+          { qId: 'c1q5', text: 'Return 0 at end', defaultCode: '', expectedPattern: /return\s*0;/ }
+        ]
+      },
+      {
+        id: 'c2', title: 'Variables', theory: 'In C, you must declare the type of every variable. Common types are int, float, char, and double. Variables must be declared before they can be used.',
+        questions: [
+          { qId: 'c2q1', text: 'Declare int x = 5', defaultCode: '', expectedPattern: /int\s*x\s*=\s*5;/ },
+          { qId: 'c2q2', text: 'Declare float f', defaultCode: '', expectedPattern: /float\s*f/ },
+          { qId: 'c2q3', text: 'Declare char c = \'A\'', defaultCode: '', expectedPattern: /char\s*c\s*=\s*[']A[']/ },
+          { qId: 'c2q4', text: 'Print int with %d', defaultCode: '', expectedPattern: /printf\(["']%d["'],\s*x\)/ },
+          { qId: 'c2q5', text: 'Constant with #define', defaultCode: '', expectedPattern: /#define\s*PI\s*3\.14/ }
+        ]
+      }
+    ],
+    intermediate: [
+      {
+        id: 'c3', title: 'Pointers', theory: 'Pointers are variables that store memory addresses. Use & to get an address and * to dereference a pointer. Pointers are essential for dynamic memory and arrays.',
+        questions: [
+          { qId: 'c3q1', text: 'Declare int pointer *p', defaultCode: '', expectedPattern: /int\s*\*p/ },
+          { qId: 'c3q2', text: 'Set p to address of x', defaultCode: '', expectedPattern: /p\s*=\s*&x/ },
+          { qId: 'c3q3', text: 'Dereference *p', defaultCode: '', expectedPattern: /\*p/ },
+          { qId: 'c3q4', text: 'Null pointer NULL', defaultCode: '', expectedPattern: /NULL/ },
+          { qId: 'c3q5', text: 'Pointer addition p++', defaultCode: '', expectedPattern: /p\+\+/ }
+        ]
+      },
+      {
+        id: 'c4', title: 'Arrays', theory: 'Arrays store multiple elements of the same type in contiguous memory. Index starts at 0. Strings in C are actually character arrays ending with a null character (\\0).',
+        questions: [
+          { qId: 'c4q1', text: 'Declare int arr[5]', defaultCode: '', expectedPattern: /int\s*arr\[5\]/ },
+          { qId: 'c4q2', text: 'Init {1, 2, 3}', defaultCode: '', expectedPattern: /\{1,\s*2,\s*3\}/ },
+          { qId: 'c4q3', text: 'Access arr[0]', defaultCode: '', expectedPattern: /arr\[0\]/ },
+          { qId: 'c4q4', text: 'String as char[]', defaultCode: '', expectedPattern: /char\s*s\[\]\s*=/ },
+          { qId: 'c4q5', text: 'Size of array sizeof', defaultCode: '', expectedPattern: /sizeof\(arr\)/ }
+        ]
+      }
+    ],
+    expert: [
+      {
+        id: 'c5', title: 'Memory', theory: 'C allows manual memory management using malloc(), calloc(), realloc(), and free(). Memory is allocated on the heap and must be manually freed to avoid leaks.',
+        questions: [
+          { qId: 'c5q1', text: 'Include stdlib.h', defaultCode: '', expectedPattern: /#include\s*<stdlib\.h>/ },
+          { qId: 'c5q2', text: 'malloc 10 ints', defaultCode: '', expectedPattern: /malloc\(10\s*\*\s*sizeof\(int\)\)/ },
+          { qId: 'c5q3', text: 'Cast malloc result', defaultCode: '', expectedPattern: /\(int\s*\*\)malloc/ },
+          { qId: 'c5q4', text: 'Free memory free(p)', defaultCode: '', expectedPattern: /free\(p\)/ },
+          { qId: 'c5q5', text: 'Calloc for 5 floats', defaultCode: '', expectedPattern: /calloc\(5,\s*sizeof\(float\)\)/ }
+        ]
+      },
+      {
+        id: 'c6', title: 'Structs', theory: 'Structs let you group different data types into a single custom type. They are the precursor to classes in C++.',
+        questions: [
+          { qId: 'c6q1', text: 'Define struct Node', defaultCode: '', expectedPattern: /struct\s*Node\s*\{/ },
+          { qId: 'c6q2', text: 'Struct field int val', defaultCode: '', expectedPattern: /int\s*val;/ },
+          { qId: 'c6q3', text: 'Access with dot (.)', defaultCode: '', expectedPattern: /node\.val/ },
+          { qId: 'c6q4', text: 'Access pointer with ->', defaultCode: '', expectedPattern: /p->val/ },
+          { qId: 'c6q5', text: 'Typedef struct', defaultCode: '', expectedPattern: /typedef\s*struct/ }
+        ]
+      }
+    ]
+  },
   dsa: {
+
     basic: [
       { id: 'd1', title: 'Complexity', theory: 'Big-O notation is the language used to talk about how much time or memory an algorithm takes as the input size (N) grows. "Time complexity" measures the number of operations, while "space complexity" measures the extra memory used. Common notations like O(1), O(log N), O(N), and O(N²) help engineers choose the right tool for the job.', questions: [
         { qId: 'd1q1', text: 'Constant time notation', defaultCode: '', expectedPattern: /O\(1\)/ },
@@ -1155,6 +1224,7 @@ export const LANGUAGES = [
   { id: 'cpp', label: 'C++', icon: '⚙️' },
   { id: 'java', label: 'Java', icon: '☕' },
   { id: 'csharp', label: 'C#', icon: '🎮' },
+  { id: 'c', label: 'C', icon: '©️' },
   { id: 'dsa', label: 'DSA', icon: '🧩' },
   { id: 'sorting', label: 'Sorting', icon: '📊' }
 ];

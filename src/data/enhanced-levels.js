@@ -13,6 +13,7 @@ export const LANGUAGES = [
   { id: 7, name: 'C++', icon: '⚙️', color: '#00599c' },
   { id: 8, name: 'Java', icon: '☕', color: '#007396' },
   { id: 9, name: 'C#', icon: '🎮', color: '#239120' },
+  { id: 10, name: 'C', icon: '©️', color: '#a8b9cc' },
 ];
 
 // Difficulty levels: Beginner (1-100), Intermediate (101-200), Advanced (201-300)
@@ -2245,6 +2246,45 @@ const CSHARP_QUESTIONS = {
   ]
 };
 
+const C_QUESTIONS = {
+  BEGINNER: [
+    { q: "What is C?", opts: ["Procedural language", "Low-level language", "Foundation for C++/Java", "All of above"], ans: 3, topic: "Basics" },
+    { q: "Which header is for printf()?", opts: ["<stdio.h>", "<iostream>", "<stdlib.h>", "<conio.h>"], ans: 0, topic: "I/O" },
+    { q: "How to declare an integer?", opts: ["int x;", "integer x;", "var x;", "declare x;"], ans: 0, topic: "Variables" },
+    { q: "What ends every C statement?", opts: [":", ".", ";", "!"], ans: 2, topic: "Syntax" },
+    { q: "Which is used for comments?", opts: ["//", "/* */", "#", "Both A and B"], ans: 3, topic: "Syntax" },
+    { q: "What is the entry point?", opts: ["start()", "main()", "init()", "run()"], ans: 1, topic: "Basics" },
+    { q: "Which format specifier for int?", opts: ["%d", "%f", "%c", "%s"], ans: 0, topic: "I/O" },
+    { q: "What is the size of 'char'?", opts: ["1 byte", "2 bytes", "4 bytes", "8 bytes"], ans: 0, topic: "Data Types" },
+    { q: "Which keyword returns value?", opts: ["back", "return", "exit", "give"], ans: 1, topic: "Functions" },
+    { q: "What is a variable?", opts: ["Memory location", "Name for data", "Storage box", "All of above"], ans: 3, topic: "Variables" },
+  ],
+  INTERMEDIATE: [
+    { q: "What is a pointer?", opts: ["Variable address", "Memory locator", "Special variable", "All of above"], ans: 3, topic: "Pointers" },
+    { q: "How to get variable address?", opts: ["*", "&", "@", "$"], ans: 1, topic: "Pointers" },
+    { q: "What is an array?", opts: ["Same-type collection", "Fixed-size data", "Contiguous memory", "All of above"], ans: 3, topic: "Arrays" },
+    { q: "What is a struct?", opts: ["User defined type", "Groups different types", "Data structure", "All of above"], ans: 3, topic: "Structures" },
+    { q: "How to allocate memory?", opts: ["new", "malloc()", "alloc()", "make()"], ans: 1, topic: "Memory" },
+    { q: "What is a string in C?", opts: ["Character array", "Null-terminated array", "Text object", "A and B"], ans: 3, topic: "Strings" },
+    { q: "What is 'sizeof' operator?", opts: ["Size in bytes", "Length of string", "Memory limit", "Bit count"], ans: 0, topic: "Basics" },
+    { q: "What is a function?", opts: ["Reusable code block", "Module", "Program part", "All of above"], ans: 3, topic: "Functions" },
+    { q: "What is a macro?", opts: ["Pre-processor directive", "#define", "Code substitution", "All of above"], ans: 3, topic: "Basics" },
+    { q: "What is 'typedef'?", opts: ["Alias for types", "New data type", "Function pointer", "Variable"], ans: 0, topic: "Syntax" },
+  ],
+  ADVANCED: [
+    { q: "What is a file pointer?", opts: ["FILE *fp", "Pointer to data", "Disk address", "Buffer"], ans: 0, topic: "File I/O" },
+    { q: "What is dynamic memory?", opts: ["Heap memory", "malloc/free usage", "Runtime allocation", "All of above"], ans: 3, topic: "Memory" },
+    { q: "What is a union?", opts: ["Shared memory space", "Similar to struct", "Memory saver", "All of above"], ans: 3, topic: "Data Types" },
+    { q: "What is bit field?", opts: ["Bit-level access", "Memory optimization", "Struct member property", "All of above"], ans: 3, topic: "Advanced" },
+    { q: "What is a function pointer?", opts: ["Points to code", "Callable via address", "Advanced callback", "All of above"], ans: 3, topic: "Pointers" },
+    { q: "What is recursion?", opts: ["Function calling itself", "Loop alternative", "Dividing problem", "All of above"], ans: 3, topic: "Algorithms" },
+    { q: "What is 'volatile'?", opts: ["Memory optimization hint", "Prevents compiler optimization", "Special variable", "B and C"], ans: 3, topic: "Advanced" },
+    { q: "What is 'static' in C?", opts: ["Persistent across calls", "File scope", "Memory management", "All of above"], ans: 3, topic: "Keywords" },
+    { q: "What is 'const' pointer?", opts: ["Address cannot change", "Value cannot change", "Read-only pointer", "B or C depending on syntax"], ans: 3, topic: "Pointers" },
+    { q: "What is a linked list?", opts: ["Dynamic structure", "Nodes with pointers", "Heap-based list", "All of above"], ans: 3, topic: "Data Structures" },
+  ]
+};
+
 // ============================================================================
 // EXPORT FUNCTIONS
 // ============================================================================
@@ -2262,6 +2302,7 @@ export function generateLevelBank() {
     CPP_QUESTIONS,
     JAVA_QUESTIONS,
     CSHARP_QUESTIONS,
+    C_QUESTIONS,
   ];
 
   // Generate 300 levels per language with proper difficulty distribution

@@ -15,7 +15,7 @@ export default function WelcomePage({ onLogin, onSignup }) {
           <Bunny size={110} mood="excited" animate />
 
           <div style={{ marginTop: 20 }}>
-            <div style={{ fontSize: 46, fontWeight: 800, letterSpacing: '-2px', lineHeight: 1 }}>
+            <div className="welcome-title" style={{ fontSize: 46, fontWeight: 800, letterSpacing: '-2px', lineHeight: 1 }}>
               Byte<span style={{ color: 'var(--accent)' }}>Bunny</span>
             </div>
             <div style={{ color: 'var(--text2)', marginTop: 12, fontSize: 13, letterSpacing: 2, display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'center', fontWeight: 700 }}>

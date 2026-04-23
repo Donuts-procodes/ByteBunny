@@ -15,6 +15,7 @@ const LANGUAGES = [
   { id: 'cpp', name: 'C++', icon: '⚙️' },
   { id: 'java', name: 'Java', icon: '☕' },
   { id: 'csharp', name: 'C#', icon: '🎮' },
+  { id: 'c', name: 'C', icon: '©️' },
   { id: 'dsa', name: 'DSA', icon: '🧩' },
 ];
 
