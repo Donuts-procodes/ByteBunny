@@ -1,6 +1,6 @@
 # 🐰 ByteBunny v3.3.0
 
-> Learn coding languages the fun way — built with **Tauri 2 + Rust + React + Firebase**
+> Learn coding languages the fun way — built with **React + Vite + Firebase**
 > Now featuring **Advanced AI Integration** for a personalized learning experience!
 
 **🌐 Web App:** [https://byte-bunny.web.app](https://byte-bunny.web.app)
@@ -32,10 +32,8 @@
 
 | Tool | Version | Install |
 |------|---------|---------|
-| Rust | ≥ 1.77  | https://rustup.rs |
 | Node | ≥ 18    | https://nodejs.org |
 | npm  | ≥ 9     | bundled with Node |
-| Tauri CLI | 2.x | `npm install -g @tauri-apps/cli` |
 
 ---
 
@@ -44,14 +42,13 @@
 ```bash
 npm install
 # Add VITE_OPENROUTER_API_KEY to .env
-npm run tauri dev
+npm run dev
 ```
 
 ---
 
 ## 🎨 Tech Stack
 
-- **Desktop**: Tauri 2 (Rust)
 - **Frontend**: React 18 + Vite
 - **AI**: Llama 3.3 (via OpenRouter)
 - **Backend**: Firebase

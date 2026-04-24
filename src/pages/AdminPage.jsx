@@ -245,12 +245,19 @@ export default function AdminPage() {
                 </div>
                 <div style={{ fontSize: 12, color: 'var(--text2)' }}>Last login: {userStats.lastLogin || 'unknown'}</div>
                 <div style={{ marginTop: 10 }}>
-                  {Object.entries(userStats.progress || {}).map(([lang, lp]) => (
-                    <div key={lang} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
-                      <span>{LANGUAGES.find(l=>l.id===lang)?.icon} {lang}</span>
-                      <span style={{ color: 'var(--accent)' }}>Lv {lp.currentLevel} · {Object.keys(lp.completedLevels||{}).length} done</span>
-                    </div>
-                  ))}
+                  {Object.entries(userStats.progress || {}).map(([lang, lp]) => {
+                    // New structure: numeric keys are levels
+                    const completedCount = Object.keys(lp).filter(key => 
+                      !isNaN(key) && lp[key]?.completed
+                    ).length;
+                    
+                    return (
+                      <div key={lang} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 4 }}>
+                        <span>{LANGUAGES.find(l=>l.id===Number(lang) || l.id===lang)?.icon} {lang}</span>
+                        <span style={{ color: 'var(--accent)' }}>Lv {lp.currentLevel} · {completedCount} done</span>
+                      </div>
+                    );
+                  })}
                 </div>
                 <pre style={{ marginTop: 12, fontSize: 10, color: 'var(--text3)', background: 'var(--bg3)', borderRadius: 8, padding: 10, overflow: 'auto', maxHeight: 200 }}>
                   {JSON.stringify(userStats, null, 2)}
@@ -271,7 +278,8 @@ export default function AdminPage() {
                 ['Enable Google Auth in Firebase Console → Authentication', '🔵'],
                 ['Add your domain to Firebase Auth authorized domains', '🌐'],
                 ['Set VITE_* env vars for production build', '🔑'],
-                ['Run: npm run tauri build', '📦'],
+                ['Run: npm run build', '📦'],
+                ['Run: firebase deploy', '🚀'],
               ].map(([step, icon]) => (
                 <div key={step} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginBottom: 10, fontSize: 12 }}>
                   <span style={{ fontSize: 16, flexShrink: 0 }}>{icon}</span>
@@ -292,12 +300,13 @@ export default function AdminPage() {
   progress: {
     python: {
       currentLevel: number
-      completedLevels: { "1": 85, "2": 100 }
+      "1": { score: 100, xp: 25, completed: true }
+      "2": { score: 85, xp: 20, completed: true }
     }
   }
 
 /admin/levels
-  python: [ { id, q, opts, ans, xp, recap } ]
+  python: [ { id, q, opts, ans, xp, topic } ]
   javascript: [ ... ]`}</pre>
             </div>
           </div>

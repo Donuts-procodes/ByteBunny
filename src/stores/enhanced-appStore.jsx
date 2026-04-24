@@ -9,9 +9,10 @@ import {
   pushToFirestore,
   fetchFromFirestore,
   subscribeFirestore,
+  mergeProgress,
 } from '../lib/firebase';
 import { db } from '../lib/firebase';
-import { doc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 // ── Admin UIDs ────────────────────────────────────────────────────────────────
 const ADMIN_UIDS = [
@@ -53,6 +54,7 @@ export const useAppStore = create(
       currentLevelId: null,
       toasts:         [],
       userAIKey:      null, // Secure user-provided OpenRouter key
+      hasAcceptedCookies: false,
 
       // Internal
       _firestoreUnsub: null,
@@ -61,6 +63,7 @@ export const useAppStore = create(
       setPage:       (page) => set({ page }),
       setActiveLang: (lang) => set({ activeLang: lang }),
       setUserAIKey:  (key)  => set({ userAIKey: key }),
+      acceptCookies: () => set({ hasAcceptedCookies: true }),
       setCourseSelection: (sel) => set((s) => ({ 
         courseSelection: { ...s.courseSelection, ...sel } 
       })),
@@ -115,7 +118,11 @@ export const useAppStore = create(
       addToast: (msg, type = 'info', dur = 2800) => {
         const id = Date.now() + Math.random();
         set((s) => ({ toasts: [...s.toasts, { id, msg, type }] }));
-        setTimeout(() => set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) })), dur); 
+        setTimeout(() => get().removeToast(id), dur); 
+      },
+
+      removeToast: (id) => {
+        set((s) => ({ toasts: s.toasts.filter((t) => t.id !== id) }));
       },
 
       saveBadges: (badgeIds) => {
@@ -382,7 +389,6 @@ export const useAppStore = create(
         });
 
         if (user?.uid) {
-          updateToFirestore(user.uid, langId, newLangProgress);
           pushToFirestore(user.uid, get()._snap());
         }
       },
@@ -457,6 +463,11 @@ export const useAppStore = create(
     {
       name: 'bytebunny-store',
       version: 3,
+      // SECURITY: Do not persist the AI Key in localStorage
+      partialize: (state) => {
+        const { userAIKey, ...rest } = state;
+        return rest;
+      },
       migrate: (persistedState, version) => {
         if (version < 3) {
           return { ...persistedState, testHistory: [] };
@@ -512,43 +523,13 @@ function calculatePlayTime(langProgress) {
   return Math.round(totalSeconds / 60);
 }
 
-async function updateToFirestore(uid, langId, langData) {
-  try {
-    await updateDoc(doc(db, 'users', uid), {
-      [`progress.${langId}`]: langData,
-      updatedAt: new Date().toISOString(),
-    });
-  } catch (error) {
-    console.error('Failed to sync to Firestore:', error);
-  }
-}
-
-function mergeProgress(local, remote) {
-  const merged = { ...remote };
-  for (let i = 1; i <= 300; i++) {
-    const l = local[i], r = remote[i];
-    if (l && r) {
-      merged[i] = {
-        ...r,
-        score: Math.max(l.score || 0, r.score || 0),
-        xp: Math.max(l.xp || 0, r.xp || 0),
-        attempts: Math.max(l.attempts || 0, r.attempts || 0),
-        bestTime: Math.min(l.bestTime || Infinity, r.bestTime || Infinity),
-      };
-    } else if (l) {
-      merged[i] = l;
-    }
-  }
-  return merged;
-}
-
 export function subscribeToProgress(userId, langId) {
   return onSnapshot(doc(db, 'users', userId), (doc) => {
     const data = doc.data();
-    if (data?.progress?.[langId]) {
+    if (data?.progress) {
       const appStore = useAppStore.getState();
-      const merged = mergeProgress(appStore.progress[langId] || {}, data.progress[langId]);
-      appStore.updateProgress(langId, merged);
+      const merged = mergeProgress(appStore.progress || {}, data.progress || {});
+      appStore.updateProgress(langId, merged[langId]);
     }
   });
 }

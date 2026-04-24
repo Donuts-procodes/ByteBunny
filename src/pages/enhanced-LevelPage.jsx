@@ -71,6 +71,9 @@ export function LevelPage() {
         setIsCorrect(false);
         setAttempts(0);
         setStartTime(Date.now());
+      } else {
+        addToast("🐰 Oops! This burrow is empty. Try another level!", "error");
+        setPage('map');
       }
 
       setLoading(false);
@@ -92,14 +95,15 @@ export function LevelPage() {
     setIsSubmitted(true);
     const correct = selectedAnswer === currentLevel.ans;
     setIsCorrect(correct);
-    setAttempts(attempts + 1);
+    const newAttempts = attempts + 1;
+    setAttempts(newAttempts);
 
     if (correct) {
       // ✅ CORRECT ANSWER
       setShowConfetti(true);
       setShowFeedback(true);
       setGamingStatus('Amazing! 🎯');
-      handleCorrectAnswer();
+      handleCorrectAnswer(newAttempts);
     } else {
       // ❌ WRONG ANSWER
       setShowFeedback(true);
@@ -112,11 +116,12 @@ export function LevelPage() {
   // CORRECT ANSWER LOGIC
   // ========================================================================
 
-  const handleCorrectAnswer = () => {
+  const handleCorrectAnswer = (finalAttempts) => {
     const timeTaken = (Date.now() - startTime) / 1000;
     
     // Calculate score: 100% if first try, decreases with attempts
-    const scoreDecrease = Math.max(0, (attempts) * 20); 
+    // If finalAttempts is 1 (first try), score is 100.
+    const scoreDecrease = Math.max(0, (finalAttempts - 1) * 20); 
     const finalScore = Math.max(10, 100 - scoreDecrease);
 
     const xpEarned = Math.floor((currentLevel.xp * finalScore) / 100);

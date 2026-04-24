@@ -46,27 +46,47 @@ setPersistence(auth, browserLocalPersistence).catch(() => {});
 export const userDoc = (uid) => doc(db, 'users', uid);
 
 export function mergeProgress(local = {}, remote = {}) {
-  const merged = {};
-  const langs  = new Set([...Object.keys(local), ...Object.keys(remote)]);
-  for (const lang of langs) {
-    if (lang === 'testHistory') continue; // Skip non-lang fields if they leak here
+  const merged = { ...remote };
+  
+  // Iterate through all languages in local and remote
+  const langs = new Set([...Object.keys(local), ...Object.keys(remote)]);
+  
+  for (const langId of langs) {
+    const l = local[langId] || {};
+    const r = remote[langId] || {};
     
-    const l = local[lang]  || { currentLevel: 1, completedLevels: {} };
-    const r = remote[lang] || { currentLevel: 1, completedLevels: {} };
-    const levels = {};
-    const allIds = new Set([
-      ...Object.keys(l.completedLevels || {}),
-      ...Object.keys(r.completedLevels || {}),
-    ]);
-    for (const id of allIds) {
-      levels[id] = Math.max(l.completedLevels?.[id] || 0, r.completedLevels?.[id] || 0);
-    }
-    merged[lang] = {
+    const mergedLang = {
       ...r,
       ...l,
-      currentLevel:    Math.max(l.currentLevel || 1, r.currentLevel || 1),
-      completedLevels: levels,
+      currentLevel: Math.max(l.currentLevel || 1, r.currentLevel || 1),
+      totalXP: Math.max(l.totalXP || 0, r.totalXP || 0),
+      levelsCompleted: Math.max(l.levelsCompleted || 0, r.levelsCompleted || 0),
     };
+
+    // Merge individual levels (keys 1-300)
+    for (let i = 1; i <= 300; i++) {
+      const lvlL = l[i];
+      const lvlR = r[i];
+      
+      if (lvlL && lvlR) {
+        mergedLang[i] = {
+          ...lvlR,
+          ...lvlL,
+          score: Math.max(lvlL.score || 0, lvlR.score || 0),
+          xp: Math.max(lvlL.xp || 0, lvlR.xp || 0),
+          attempts: Math.max(lvlL.attempts || 0, lvlR.attempts || 0),
+          bestTime: lvlL.bestTime && lvlR.bestTime 
+            ? Math.min(lvlL.bestTime, lvlR.bestTime) 
+            : (lvlL.bestTime || lvlR.bestTime),
+          completed: lvlL.completed || lvlR.completed
+        };
+      } else if (lvlL) {
+        mergedLang[i] = lvlL;
+      } else if (lvlR) {
+        mergedLang[i] = lvlR;
+      }
+    }
+    merged[langId] = mergedLang;
   }
   return merged;
 }
@@ -123,33 +143,8 @@ export async function firebaseEmailLogin(email, password) {
 }
 
 export async function firebaseGoogleLogin() {
-  if (window.__TAURI_INTERNALS__) {
-    const { isMobile } = await import('@tauri-apps/api/core');
-    const { open } = await import('@tauri-apps/plugin-shell');
-    
-    if (await isMobile()) {
-      // Direct Google OAuth URL that redirects to the Firebase Auth handler
-      // which should then redirect to our deep link bytebunny://auth
-      const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${import.meta.env.VITE_GOOGLE_WEB_CLIENT_ID || ''}&redirect_uri=https://${firebaseConfig.authDomain}/__/auth/handler&response_type=id_token&scope=openid%20email%20profile&nonce=bytebunny`;
-      
-      try {
-        await open(authUrl);
-        return null;
-      } catch (e) {
-        console.error('Failed to open system browser:', e);
-        throw e;
-      }
-    }
-  }
-  
   const provider = new GoogleAuthProvider();
   const cred     = await signInWithPopup(auth, provider);
-  return cred.user;
-}
-
-export async function loginWithToken(idToken) {
-  const credential = GoogleAuthProvider.credential(idToken);
-  const cred = await signInWithCredential(auth, credential);
   return cred.user;
 }
 

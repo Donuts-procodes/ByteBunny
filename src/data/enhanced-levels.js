@@ -3,17 +3,17 @@
 // Answers never revealed on wrong answer, smart level replay
 
 export const LANGUAGES = [
-  { id: 0, name: 'Python', icon: '🐍', color: '#3776ab' },
-  { id: 1, name: 'JavaScript', icon: '⚡', color: '#f1e05a' },
-  { id: 2, name: 'Rust', icon: '🦀', color: '#ce422b' },
-  { id: 3, name: 'SQL', icon: '🗄️', color: '#cc2927' },
-  { id: 4, name: 'Bash', icon: '🔧', color: '#4eaa25' },
-  { id: 5, name: 'Go', icon: '🐹', color: '#00add8' },
-  { id: 6, name: 'TypeScript', icon: '📘', color: '#2b7a0b' },
-  { id: 7, name: 'C++', icon: '⚙️', color: '#00599c' },
-  { id: 8, name: 'Java', icon: '☕', color: '#007396' },
-  { id: 9, name: 'C#', icon: '🎮', color: '#239120' },
-  { id: 10, name: 'C', icon: '©️', color: '#a8b9cc' },
+  { id: 'python', name: 'Python', icon: '🐍', color: '#3776ab' },
+  { id: 'javascript', name: 'JavaScript', icon: '⚡', color: '#f1e05a' },
+  { id: 'rust', name: 'Rust', icon: '🦀', color: '#ce422b' },
+  { id: 'sql', name: 'SQL', icon: '🗄️', color: '#cc2927' },
+  { id: 'bash', name: 'Bash', icon: '🔧', color: '#4eaa25' },
+  { id: 'go', name: 'Go', icon: '🐹', color: '#00add8' },
+  { id: 'typescript', name: 'TypeScript', icon: '📘', color: '#2b7a0b' },
+  { id: 'cpp', name: 'C++', icon: '⚙️', color: '#00599c' },
+  { id: 'java', name: 'Java', icon: '☕', color: '#007396' },
+  { id: 'csharp', name: 'C#', icon: '🎮', color: '#239120' },
+  { id: 'c', name: 'C', icon: '©️', color: '#a8b9cc' },
 ];
 
 // Difficulty levels: Beginner (1-100), Intermediate (101-200), Advanced (201-300)

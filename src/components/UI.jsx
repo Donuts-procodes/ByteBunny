@@ -32,15 +32,12 @@ export function Bunny({
 // ── Toast Container ───────────────────────────────────────────────────────────
 export function ToastContainer() {
   const toasts = useAppStore((s) => s.toasts);
+  const removeToast = useAppStore((s) => s.removeToast);
   
   const getEmoji = (type, msg) => {
     // If message already starts with an emoji, don't prepend one
     if (/^[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}]/u.test(msg)) return '';
     return type === 'success' ? '🎯 ' : type === 'error' ? '❌ ' : 'ℹ️ ';
-  };
-
-  const removeToast = (id) => {
-    useAppStore.setState((s) => ({ toasts: s.toasts.filter(t => t.id !== id) }));
   };
 
   return (
@@ -59,7 +56,11 @@ export function ToastContainer() {
               cursor: 'pointer', 
               fontSize: 14, 
               opacity: 0.7,
-              padding: '4px'
+              padding: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginLeft: '4px'
             }}
           >
             ✕
@@ -170,6 +171,9 @@ export function SettingsModal({ onClose }) {
   const toggleDark = useAppStore((s) => s.toggleDark);
   const konamiUnlocked = useAppStore((s) => s.konamiUnlocked);
   const isCarrotTheme = useAppStore((s) => s.isCarrotTheme);
+  const userAIKey = useAppStore((s) => s.userAIKey);
+  const setUserAIKey = useAppStore((s) => s.setUserAIKey);
+
   const triggerKonamiToggle = () => {
     useAppStore.setState(s => ({ isCarrotTheme: !s.isCarrotTheme }));
   };
@@ -197,6 +201,38 @@ export function SettingsModal({ onClose }) {
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {/* AI Key Section */}
+          <div
+            style={{
+              padding: "14px 16px",
+              background: "var(--bg3)",
+              borderRadius: 12,
+              border: "1px solid var(--border)",
+            }}
+          >
+            <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 8 }}>🔑 OpenRouter API Key</div>
+            <input 
+              type="password"
+              placeholder="sk-or-v1-..."
+              value={userAIKey || ''}
+              onChange={(e) => setUserAIKey(e.target.value)}
+              style={{
+                width: '100%',
+                background: 'var(--bg-deep)',
+                border: '1px solid var(--border)',
+                borderRadius: 8,
+                padding: '8px 12px',
+                color: 'var(--accent)',
+                fontFamily: 'var(--font)',
+                fontSize: 11,
+                outline: 'none'
+              }}
+            />
+            <div style={{ fontSize: 9, color: "var(--text-low)", marginTop: 6, lineHeight: 1.4 }}>
+              Required for AI features. Your key is kept in memory only and never shared.
+            </div>
+          </div>
+
           {/* Golden Carrot Toggle (Easter Egg) */}
           {konamiUnlocked && (
             <div

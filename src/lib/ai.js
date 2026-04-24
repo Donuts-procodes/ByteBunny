@@ -18,7 +18,7 @@ const getHeaders = () => {
   const finalKey = userKey || envKey;
 
   if (!finalKey) {
-    console.error("[ByteBunny Security] No OpenRouter API Key found! AI features will fail.");
+    throw new Error("API_KEY_MISSING");
   }
 
   return {
@@ -99,10 +99,7 @@ export async function generateAITest(config) {
     const data = await response.json();
     if (!data.choices?.[0]?.message?.content) throw new Error("Empty AI response");
 
-    const parsed = JSON.parse(data.choices[0].message.content);
-    if (!parsed.questions || !Array.isArray(parsed.questions)) throw new Error("Invalid question format received");
-
-    return parsed.questions;
+    return parseAIResponse(data.choices[0].message.content).questions;
   } catch (error) {
     console.error("[AI Service] Generation failed:", error);
     throw error;
@@ -162,10 +159,19 @@ export async function generateCourseTopic(lang, level, existingTitles) {
     
     // Convert string pattern back to RegExp object for the app
     if (parsed.questions) {
-      parsed.questions = parsed.questions.map(q => ({
-        ...q,
-        expectedPattern: new RegExp(q.expectedPattern)
-      }));
+      parsed.questions = parsed.questions.map(q => {
+        let pattern;
+        try {
+          pattern = new RegExp(q.expectedPattern);
+        } catch (e) {
+          console.warn("Invalid regex from AI:", q.expectedPattern);
+          pattern = /.*/; // Fallback to match everything
+        }
+        return {
+          ...q,
+          expectedPattern: pattern
+        };
+      });
     }
     
     return parsed;

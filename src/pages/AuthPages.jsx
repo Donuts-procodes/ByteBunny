@@ -131,7 +131,7 @@ const handleGooglePopupAuth = async (setLoadingState, addToast, loginWithGoogle)
   try {
     const success = await loginWithGoogle();
     if (success) {
-      addToast("Welcome back! 🐰✨", "success");
+      addToast("Welcome! 🐰✨", "success");
     }
   } catch (error) {
     if (error.code === 'auth/popup-closed-by-user') {
@@ -296,6 +296,7 @@ export function SignupPage({ onBack, onLogin }) {
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const register = useAppStore((s) => s.register);
+  const loginWithGoogle = useAppStore((s) => s.loginWithGoogle);
   const addToast = useAppStore((s) => s.addToast);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
@@ -346,7 +347,7 @@ export function SignupPage({ onBack, onLogin }) {
                   addToast("Please accept Terms & Privacy Policy", "error");
                   return;
                 }
-                handleGooglePopupAuth(setGoogleLoading, addToast, register);
+                handleGooglePopupAuth(setGoogleLoading, addToast, loginWithGoogle);
               }} 
               loading={googleLoading} 
             />
