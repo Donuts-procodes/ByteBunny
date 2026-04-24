@@ -2322,7 +2322,7 @@ export function generateLevelBank() {
       if (q) {
         levels.push({
           id: i,
-          langId: langIdx,
+          langId: lang.id,
           difficulty: 'BEGINNER',
           recap: i % 5 === 0, // Every 5th level is a recap
           title: `${lang.name} - Level ${i}`,
@@ -2345,7 +2345,7 @@ export function generateLevelBank() {
       if (q) {
         levels.push({
           id: i,
-          langId: langIdx,
+          langId: lang.id,
           difficulty: 'INTERMEDIATE',
           recap: i % 5 === 0,
           title: `${lang.name} - Level ${i}`,
@@ -2368,7 +2368,7 @@ export function generateLevelBank() {
       if (q) {
         levels.push({
           id: i,
-          langId: langIdx,
+          langId: lang.id,
           difficulty: 'ADVANCED',
           recap: i % 5 === 0,
           title: `${lang.name} - Level ${i}`,
@@ -2382,7 +2382,7 @@ export function generateLevelBank() {
       }
     }
 
-    levelsByLanguage[langIdx] = levels;
+    levelsByLanguage[lang.id] = levels;
   });
 
   return levelsByLanguage;
