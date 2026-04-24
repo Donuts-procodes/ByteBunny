@@ -322,7 +322,7 @@ export default function CoursePage() {
             </div>
             <div style={{ padding: 10, borderTop: '1px solid var(--border)', display: 'flex', gap: 6 }}>
               <input className="input" placeholder="Ask..." value={prompt} onChange={(e) => setPrompt(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} style={{ fontSize: 12 }} />
-              <button className="btn btn-primary btn-sm" onClick={handleSendMessage}>🚀</button>
+              <button className="btn btn-primary btn-sm" onClick={handleSendMessage}>➜</button>
             </div>
           </div>
         </div>

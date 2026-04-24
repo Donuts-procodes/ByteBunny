@@ -126,21 +126,15 @@ function Divider() {
 }
 
 // ── Helper: Shared Google Auth Logic ──────────────────────────────────────────
-// We abstract this out because Firebase Google Auth handles BOTH signup and login identically.
-const handleGooglePopupAuth = async (setLoadingState, addToast, appStoreLoginMethod) => {
+const handleGooglePopupAuth = async (setLoadingState, addToast, loginWithGoogle) => {
   setLoadingState(true);
   try {
-    const provider = new GoogleAuthProvider();
-    // This triggers the standard in-browser popup
-    const result = await signInWithPopup(auth, provider);
-    
-    // Optional: Pass the Firebase user object or token into your Zustand store
-    // appStoreLoginMethod(result.user);
-    
-    addToast(`Welcome, ${result.user.displayName}!`, "success");
+    const success = await loginWithGoogle();
+    if (success) {
+      addToast("Welcome back! 🐰✨", "success");
+    }
   } catch (error) {
     if (error.code === 'auth/popup-closed-by-user') {
-      // User closed the window manually, no need to show an ugly error
       addToast("Login cancelled.", "info");
     } else {
       console.error(error);
@@ -159,6 +153,7 @@ export function LoginPage({ onBack, onSignup }) {
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const login = useAppStore((s) => s.login);
+  const loginWithGoogle = useAppStore((s) => s.loginWithGoogle);
   const addToast = useAppStore((s) => s.addToast);
 
   const handleEmailLogin = async () => {
@@ -187,7 +182,7 @@ export function LoginPage({ onBack, onSignup }) {
             
             <GoogleButton 
               onClick={() => {
-                handleGooglePopupAuth(setGoogleLoading, addToast, login);
+                handleGooglePopupAuth(setGoogleLoading, addToast, loginWithGoogle);
               }} 
               loading={googleLoading} 
             />

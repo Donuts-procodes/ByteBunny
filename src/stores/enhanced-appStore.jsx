@@ -38,14 +38,12 @@ export const useAppStore = create(
       
       // Easter Egg Tracking
       rabbitHoleClicks: 0,
-      bunnyHops: 0,
       konamiUnlocked: false,
       foxPangram: false,
       isLagomorph: false,
       carat24Entered: false,
       isPanicMode: false,
       isCarrotTheme: false,
-      isBouncing: false,
 
       // UI
       darkMode:       true,
@@ -168,7 +166,7 @@ export const useAppStore = create(
             const isAdmin = ADMIN_UIDS.includes(fbUser.uid);
             const remote  = await fetchFromFirestore(fbUser.uid);
             const today   = new Date().toDateString();
-            const { progress, courseProgress, testHistory, xp, streak, lastLogin, darkMode } = get();
+            const { progress, courseProgress, testHistory, xp, streak, lastLogin, darkMode, page: currentPage } = get();
 
             const mergedProgress = mergeProgress(progress, remote?.progress || {});
             const mergedCourseProgress = { ...courseProgress, ...(remote?.courseProgress || {}) };
@@ -207,11 +205,15 @@ export const useAppStore = create(
               isAdmin,
             };
 
+            // Determine target page: keep current if it's a valid app page, else go home
+            const AUTH_PAGES = ['loading', 'welcome', 'login', 'signup', 'forgot-password'];
+            const targetPage = AUTH_PAGES.includes(currentPage) ? 'home' : currentPage;
+
             set({
               user,
               firebaseUser: fbUser,
               authReady:    true,
-              page:         'home',
+              page:         targetPage,
               progress:     mergedProgress,
               courseProgress: mergedCourseProgress,
               testHistory:  mergedTestHistory,
@@ -247,7 +249,7 @@ export const useAppStore = create(
       },
 
       register: async (form) => {
-        const { addToast } = get();
+        const { addToast, login } = get();
         try {
           const fbUser = await firebaseEmailSignup(form.email, form.password, form.username); 
           await pushToFirestore(fbUser.uid, {
@@ -258,23 +260,41 @@ export const useAppStore = create(
             streak:    0,
             lastLogin: new Date().toDateString(),
             progress:  {},
+            courseProgress: {},
             testHistory: [],
+            badges:    [],
             darkMode:  get().darkMode,
           });
           addToast('🐰 Account created! Welcome!', 'success');
           return true;
         } catch (err) {
+          if (err.code === 'auth/email-already-in-use') {
+            addToast("Account already exists! Logging you in...", "info");
+            return await login(form.email, form.password);
+          }
           addToast(err.message, 'error');
           return false;
         }
       },
 
       login: async (identifier, password) => {
+        const { addToast, register } = get();
         try {
           await firebaseEmailLogin(identifier, password);
           return true;
         } catch (err) {
-          get().addToast(err.message, 'error');
+          if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential') {
+            // Check if it's an email format to attempt auto-registration
+            if (identifier.includes('@')) {
+              addToast("Account not found! Creating a new one...", "info");
+              return await register({
+                email: identifier,
+                password: password,
+                username: identifier.split('@')[0]
+              });
+            }
+          }
+          addToast(err.message, 'error');
           return false;
         }
       },
@@ -406,15 +426,6 @@ export const useAppStore = create(
         set({ rabbitHoleClicks: current + 1 });
         if (current + 1 === 5) {
           get().addToast("🌀 Down the Rabbit Hole! You've gone too deep!", "success");
-        }
-      },
-
-      triggerBunnyHop: () => {
-        const current = get().bunnyHops;
-        set({ bunnyHops: current + 1, isBouncing: true });
-        setTimeout(() => set({ isBouncing: false }), 500);
-        if (current + 1 === 5) {
-          get().addToast("👟 Bunny Hop! Check those hops!", "success");
         }
       },
 

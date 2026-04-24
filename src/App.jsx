@@ -22,7 +22,7 @@ import { COURSE_DATA, LANGUAGES as COURSE_LANGS } from './data/courses';
 function useBadgeTracker() {
   const { 
     xp, streak, progress, courseProgress, badges, saveBadges, addToast,
-    rabbitHoleClicks, bunnyHops, konamiUnlocked, foxPangram, isLagomorph, carat24Entered
+    rabbitHoleClicks, konamiUnlocked, foxPangram, isLagomorph, carat24Entered
   } = useAppStore();
 
   const stats = useMemo(() => ({
@@ -41,13 +41,12 @@ function useBadgeTracker() {
     }, 0),
     maxLevel: Object.values(progress).reduce((max, lang) => Math.max(max, lang.currentLevel || 1), 1),
     rabbitHoleClicks,
-    bunnyHops,
     konamiUnlocked,
     foxPangram,
     isLagomorph,
     carat24Entered,
     progress
-  }), [xp, streak, progress, courseProgress, rabbitHoleClicks, bunnyHops, konamiUnlocked, foxPangram, isLagomorph, carat24Entered]);
+  }), [xp, streak, progress, courseProgress, rabbitHoleClicks, konamiUnlocked, foxPangram, isLagomorph, carat24Entered]);
 
   useEffect(() => {
     if (xp === 0 && streak === 0) return; // Wait for initial load
@@ -71,9 +70,9 @@ function useBadgeTracker() {
 // ── Global Easter Egg Manager ────────────────────────────────────────────────
 function GlobalEasterEggManager() {
   const { 
-    page, triggerRabbitHole, triggerBunnyHop, unlockKonami, 
+    page, user, triggerRabbitHole, unlockKonami, 
     triggerFoxPanic, triggerLagomorph, triggerCarat24,
-    isCarrotTheme, isPanicMode, isBouncing 
+    isCarrotTheme, isPanicMode 
   } = useAppStore();
 
   const konami = useRef([]);
@@ -88,12 +87,7 @@ function GlobalEasterEggManager() {
       konami.current = konami.current.slice(-10);
       if (konami.current.join(',') === k.join(',')) unlockKonami();
 
-      // 2. Bunny Hop (Spacebar visual bounce)
-      if (e.code === 'Space') {
-        triggerBunnyHop();
-      }
-
-      // 3. The Quick Brown Fox (Pangram)
+      // 2. The Quick Brown Fox (Pangram)
       pangram.current += e.key.toLowerCase();
       pangram.current = pangram.current.slice(-50);
       if (pangram.current.includes("the quick brown fox jumps over the lazy dog")) triggerFoxPanic();
@@ -130,10 +124,15 @@ function GlobalEasterEggManager() {
   }, [page]);
 
   useEffect(() => {
-    document.body.classList.toggle('carrot-theme', isCarrotTheme);
+    // Determine if we are on a welcome/auth page
+    const isAuthPage = ['welcome', 'login', 'signup', 'forgot-password'].includes(page);
+    
+    // Only allow carrot theme if logged in, enabled, AND NOT on an auth page
+    const activeCarrot = user && isCarrotTheme && !isAuthPage;
+    
+    document.body.classList.toggle('carrot-theme', activeCarrot);
     document.body.classList.toggle('panic-mode', isPanicMode);
-    document.body.classList.toggle('bouncing', isBouncing);
-  }, [isCarrotTheme, isPanicMode, isBouncing]);
+  }, [isCarrotTheme, isPanicMode, user, page]);
 
   return null;
 }
